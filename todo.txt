@@ -11,3 +11,4 @@ Comer menos açúcar
 (B) Revisar artigos SBES Insightful Ideas +Service
 (B) Revisar artigos SBLP +Service
 (D) Ler "Optimizing energy consumption of GUIs in android apps: A multi-objective approach."
+(A) Fazer tarefa 2 do projeto de algoritmos
