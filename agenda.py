@@ -97,11 +97,27 @@ def horaValida(horaMin:str) :
 # Valida datas. Verificar inclusive se não estamos tentando
 # colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
 # de que um ano é bissexto. 
-def dataValida(data) :
+def dataValida(data:str) :
+  if len(data) !=8 or not soDigitos(data):
+    return False
+  else:
+    dia:int=int(data[0:2])
+    mes:int=int(data[2:4])
 
-  ################ COMPLETAR
+    if mes in [1,3,5,7,8,10,12]:
+      diaMax:int=31
+    elif mes in [4,6,9,11]:
+      diaMax:int=30
+    elif mes==2:
+      diaMax:int=29
+    else:
+      return False
 
-  return False
+    if dia<0 or dia>diaMax:
+      return False
+    else:
+      return True
+
 
 # Valida que o string do projeto está no formato correto. 
 def projetoValido(proj):
@@ -274,3 +290,11 @@ def processarComandos(comandos) :
 # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
 
 # processarComandos(sys.argv)
+
+'''print(dataValida("20042020")==True)
+print(dataValida("33042020")==False)
+print(dataValida("30022020")==False)
+print(dataValida("20132020")==False)
+print(dataValida("31042020")==False)
+print(dataValida("100220")==False)
+print(dataValida("472928828")==False)'''
