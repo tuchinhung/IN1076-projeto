@@ -79,11 +79,19 @@ def prioridadeValida(pri):
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
-def horaValida(horaMin) :
+def horaValida(horaMin:str) :
   if len(horaMin) != 4 or not soDigitos(horaMin):
     return False
   else:
-    ################ COMPLETAR
+    horas:int = int(horaMin[0:2])
+    minutos:int = int(horaMin[2:4])
+
+    if horas < 0 or horas > 23:
+      return False
+    
+    if minutos < 0 or minutos > 59:
+      return False
+
     return True
 
 # Valida datas. Verificar inclusive se não estamos tentando
@@ -264,4 +272,5 @@ def processarComandos(comandos) :
 # sys.argv terá como conteúdo
 #
 # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
-processarComandos(sys.argv)
+
+# processarComandos(sys.argv)
