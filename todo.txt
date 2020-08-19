@@ -1,14 +1,28 @@
-Comer menos aÃ§Ãºcar 
-23052017 1030 ReuniÃ£o com Huguinho, Luizinho e Zezinho. @Skype +Pesquisa
-(B) Terminar a especificaÃ§Ã£o do projeto de IN1076. +IN1076
-(B) Publicar a especificaÃ§Ã£o do projeto de IF968 terminada. +IN1076
-(A) Corrigir provas de IN1076 +IN1076
-23052017 (A) Ler artigo IST. +ServiÃ§o
-2330 Dormir cedo @Casa
-(B) Revisar artigo IST +Service
-(B) Revisar artigos SBES +Service
-(B) Revisar artigos SBES Education +Service
-(B) Revisar artigos SBES Insightful Ideas +Service
-(B) Revisar artigos SBLP +Service
-(D) Ler "Optimizing energy consumption of GUIs in android apps: A multi-objective approach."
-(A) Fazer tarefa 2 do projeto de algoritmos
+(B) Finalizar ppt do projeto Minas nas Escolas
+23052020 1930 Jantar de aniversário de Painho @Casa
+(A) Fazer o projeto da Disciplina de Algoritmos. +IN1076
+(B) Criar planilha para compartilhar com o financeiro para reembolso. +GNED
+(C) Aprender a mexer no github para avançar no projeto.
+220820 (A) Iniciar a transcrição das entrevistas da Dissertação +Dissertação
+22082020 Participar de Oficina de Canais de Tração do CESARLabs +GNED
+22082020 Fazer o exercício passado pelo professor Gabriel +Fitness
+(B) Emitir nota fiscal do serviço prestado no programa Porto Digital +MTM
+31082020 1630 Realizar a oficina "Como arrasar fazendo apresentações" do Minas nas Escolas +MTM
+17082020 Enviar ativação para os leads da campanha do curso de Produtos +Job
+(C) Preparar chá de fraldas de Mari
+01092020 1930 Chá de Fraldas de Mari @CasadeMari
+190820 1900 Encontro com alunos do GNED SP +GNED @Zoom
+(C) Escrever capitulo 3 da dissertação +Dissertação
+(C) Transcrever entrevista com a Porto Engenharia +Dissertação
+(C) Transcrever entrevista com a Cardeal Distribuidora +Dissertação
+23082020 Ler artigo passado por Profa Carina sobre GameJams +Dissertação
+15092020 1930 Comemoração do Aniversário de Camila @Restaurante
+100920 Reunião com a coordenação de curso +GNED
+230820 Fazer o exercício passado pelo professor Gabriel +Fitness @Academia
+24082020 Fazer o exercício passado pelo professor Gabriel +Fitness
+25082020 Fazer o exercício passado pelo professor Gabriel +Fitness
+(C) Subir as horas extras realizadas essa semana no Portal do Colaborador +Job
+(D) Fazer pesquisa sobre tipos diferentes de relacionamentos de startups @Dissertação
+(D) Escrever artigo sobre entrevistas Porto Digital +Dissertação
+16092020 1900 Reunião de negócios e novas oportunidades +Job
+01092020 Organizar e participar do curso sobre Tendências Digitais +Job
