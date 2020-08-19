@@ -86,9 +86,11 @@ def horaValida(horaMin:str) :
     horas:int = int(horaMin[0:2])
     minutos:int = int(horaMin[2:4])
 
+    # Hora precisa ser entre 00 e 23
     if horas < 0 or horas > 23:
       return False
     
+    # Minuto precisa ser entre 00 e 59
     if minutos < 0 or minutos > 59:
       return False
 
@@ -101,19 +103,24 @@ def dataValida(data:str) :
   if len(data) !=8 or not soDigitos(data):
     return False
   else:
-    dia:int=int(data[0:2])
-    mes:int=int(data[2:4])
+    dia:int = int(data[0:2])
+    mes:int = int(data[2:4])
 
+    # Caso mês de 31 dias
     if mes in [1,3,5,7,8,10,12]:
-      diaMax:int=31
+      nDiasMes:int=31
+    # Caso mês de 30 dias
     elif mes in [4,6,9,11]:
-      diaMax:int=30
+      nDiasMes:int=30
+    # Caso fevereiro
     elif mes==2:
-      diaMax:int=29
+      nDiasMes:int=29
+    # Nenhum dos casos = mes invalido
     else:
       return False
 
-    if dia<0 or dia>diaMax:
+    # Dia precisa ser entre 1 e numero de dias no mês
+    if dia < 0 or dia > nDiasMes:
       return False
     else:
       return True
@@ -289,12 +296,6 @@ def processarComandos(comandos) :
 #
 # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
 
-# processarComandos(sys.argv)
-
-'''print(dataValida("20042020")==True)
-print(dataValida("33042020")==False)
-print(dataValida("30022020")==False)
-print(dataValida("20132020")==False)
-print(dataValida("31042020")==False)
-print(dataValida("100220")==False)
-print(dataValida("472928828")==False)'''
+# Main para possibilitar importar as funções para teste
+if __name__ == "__main__":
+  processarComandos(sys.argv)
