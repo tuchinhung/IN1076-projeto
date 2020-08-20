@@ -70,10 +70,12 @@ def adicionar(descricao, extras):
 
 
 # Valida a prioridade.
-def prioridadeValida(pri):
+def prioridadeValida(pri:str):
+  if len(pri) == 3:
+    if pri[0] == "(" and pri[2] == ")":
+      if soLetras(pri[1]):
+        return True
 
-  ################ COMPLETAR
-  
   return False
 
 
@@ -150,6 +152,17 @@ def soDigitos(numero):
   for x in numero :
     if x < '0' or x > '9':
       return False
+  return True
+
+def soLetras(palavra):
+  if type(palavra) != str:
+    return False
+  palavraMinusculo:str=palavra.lower()
+
+  for caractere in palavraMinusculo :
+    if caractere < 'a' or caractere > 'z':
+      return False
+
   return True
 
 
