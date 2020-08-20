@@ -1,5 +1,7 @@
 import sys
 
+from typing import List
+
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
 
@@ -20,8 +22,14 @@ LISTAR = 'l'
 
 class Compromisso: 
   ################ COMPLETAR
-  def __init__(self): 
-    ################ COMPLETAR
+  def __init__(self, tupla):
+    ''''tupla(desc, pri, (data, hora, contexto, projeto))'''
+    self.desc = tupla[0]
+    self.pri = tupla[1]
+    self.data = tupla[2][0]
+    self.hora = tupla[2][1]
+    self.contexto = tupla[2][2]
+    self.projeto = tupla[2][3]
     return
 
 
@@ -165,6 +173,12 @@ def soLetras(palavra):
 
   return True
 
+def reverterSplit(tokens:List[str]) -> str:
+  string:str = tokens.pop(0)
+  while len(tokens):
+    string += " " + tokens.pop(0)
+
+  return string
 
 # Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
 # uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
@@ -179,7 +193,7 @@ def soLetras(palavra):
 #
 # Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
 # data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
-# tudo que vier depois será considerado parte da descrição.  
+# tudo que vier depois será considerado parte da descrição.
 def organizar(linhas):
   itens = []
 
@@ -201,16 +215,33 @@ def organizar(linhas):
     # faz-se o mesmo para prioridade. Neste ponto, verifica-se os últimos tokens
     # para saber se são contexto e/ou projeto. Quando isso terminar, o que sobrar
     # corresponde à descrição. É só transformar a lista de tokens em um string e
-    # construir a tupla com as informações disponíveis. 
+    # construir a tupla com as informações disponíveis.
+    tokensDescricao = []
+    while len(tokens):
+      token = tokens.pop(0)
 
-    ################ COMPLETAR
+      if dataValida(token):
+        data = token
+      elif horaValida(token):
+        hora = token
+      elif prioridadeValida(token):
+        pri = token
+      elif contextoValido(token):
+        contexto = token
+      elif projetoValido(token):
+        projeto = token
+      else:
+        tokensDescricao.append(token)
+
+    desc = reverterSplit(tokensDescricao)
+
+    tupla = (desc, pri, (data, hora, contexto, projeto))
 
     # A linha abaixo inclui em itens um objeto contendo as informações relativas aos compromissos
     # nas várias linhas do arquivo.
-    # itens.append(...)
+    itens.append(Compromisso(tupla))
 
   return itens
-
 
 # Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
 # como se espera (com os separadores apropridados). 
@@ -312,5 +343,5 @@ def processarComandos(comandos) :
 # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
 
 # Main para possibilitar importar as funções para teste
-if __name__ == "__main__":
-  processarComandos(sys.argv)
+# if __name__ == "__main__":
+  # processarComandos(sys.argv)

@@ -13,7 +13,7 @@ Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
 - [x] Tarefa 5
 - [x] Tarefa 6
 - [x] Tarefa 7
-- [ ] Tarefa 8
+- [x] Tarefa 8
 - [ ] Tarefa 9
 - [ ] Tarefa 10
 - [ ] Tarefa 11
