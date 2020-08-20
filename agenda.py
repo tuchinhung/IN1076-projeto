@@ -128,10 +128,11 @@ def dataValida(data:str) :
 
 # Valida que o string do projeto está no formato correto. 
 def projetoValido(proj:str):
-  if proj[0] == '+' and len(proj) >= 2:
+  if len(proj) >= 2 and proj[0] == '+' :
     return True
 
   return False
+
 
 # Valida que o string do contexto está no formato correto. 
 def contextoValido(cont):
