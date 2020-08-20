@@ -127,9 +127,9 @@ def dataValida(data:str) :
 
 
 # Valida que o string do projeto está no formato correto. 
-def projetoValido(proj):
-
-  ################ COMPLETAR
+def projetoValido(proj:str):
+  if proj[0] == '+' and len(proj) >= 2:
+    return True
 
   return False
 
@@ -142,11 +142,11 @@ def contextoValido(cont):
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
 # extras no início e no fim.
-def soDigitos(numero) :
-  if type(numero) != str :
+def soDigitos(numero):
+  if type(numero) != str:
     return False
   for x in numero :
-    if x < '0' or x > '9' :
+    if x < '0' or x > '9':
       return False
   return True
 
