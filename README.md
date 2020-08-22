@@ -20,14 +20,14 @@ Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
 - [x] Tarefa 12
 - [x] Tarefa 13
 - [x] Tarefa 14
-- [ ] Tarefa 15
-- [ ] Tarefa 16
-- [ ] Tarefa 17
-- [ ] Tarefa 18
-- [ ] Tarefa 19
-- [ ] Tarefa 20
-- [ ] Tarefa 21
-- [ ] Tarefa 22
+- [x] Tarefa 15
+- [x] Tarefa 16
+- [x] Tarefa 17
+- [x] Tarefa 18
+- [x] Tarefa 19
+- [x] Tarefa 20
+- [x] Tarefa 21
+- [x] Tarefa 22
 
 ## Duvidas
 

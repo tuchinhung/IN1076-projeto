@@ -1,4 +1,5 @@
 import sys
+import matplotlib.pyplot as plt
 
 from typing import List
 
@@ -69,6 +70,7 @@ class Compromisso:
     return ''
 
   def getDataOrdenacao(self):
+    # TODO Usar Timestamp
     ano = 9999
     mes = 13
     dia = 32
@@ -473,7 +475,7 @@ def desenhar(dias:int):
   try:
     arquivo = open(ARCHIVE_FILE, 'r')
     for linha in arquivo:
-      if linha != '':
+      if linha != '\n':
         linhasCompletadas.append(linha)
   except IOError as err:
     print("Não foi possível ler o arquivo " + TODO_FILE)
@@ -483,10 +485,31 @@ def desenhar(dias:int):
     arquivo.close()
 
   atividadesCompletadas = organizar(linhasCompletadas)
-  atividadesCompletadas.sort(key=lambda x: x.getDataOrdenacao(), reverse=False)
+  atividadesCompletadas.sort(key=lambda x: x.getDataOrdenacao(), reverse=True)
 
-  for linha in atividadesCompletadas:
-    print(linha.stringTXT())
+  dataUltimaAtividadeCompletada = (0, 0, 0)
+  atividadesCompletadasPorDia = [0] * dias #[0, 0, 0, 0, 0]
+  for atividade in atividadesCompletadas:
+    if atividade.data == '':
+        break
+    if dataUltimaAtividadeCompletada == (0,0,0):
+      dataUltimaAtividadeCompletada = atividade.getDataOrdenacao()
+      atividadesCompletadasPorDia[0] += 1
+    else:
+      dataAtividade = atividade.getDataOrdenacao()
+      x = dataUltimaAtividadeCompletada[2] - dataAtividade[2] #TODO SÓ CONSIDERA DIFERENCA DA DATA DO DIA, NÃO FUNCIONA PARA DIAS EM MESES DIFERENTE
+      if x > dias:
+        break
+      atividadesCompletadasPorDia[x] += 1
+
+  atividadesCompletadasPorDia.reverse()
+
+  x = range(dias) # [0, 1, 2 , 3, 4]
+  # TODO CONFIGURAR O GRAFICO
+  plt.plot(x, atividadesCompletadasPorDia)
+  plt.show()
+
+
 
 
   return
