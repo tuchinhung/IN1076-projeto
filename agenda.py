@@ -19,6 +19,7 @@ REMOVER = 'r'
 FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
+DESENHAR = 'g'
 
 # comp = Compromisso(descricao)
 
@@ -42,6 +43,8 @@ class Compromisso:
   def adicionarPrioridade(self, prioridade:str):
     if prioridadeValida(prioridade):
       self.prioridade = prioridade
+      return True
+    return False
 
   def adicionarData(self, data:str):
     if dataValida(data):
@@ -111,10 +114,8 @@ class Compromisso:
 #
 # printCores('Oi mundo!', RED)
 # printCores('Texto amarelo e negrito', YELLOW + BOLD)
-
 def printCores(texto, cor) :
   print(cor + texto + RESET)
-
 
 # Adiciona um compromisso aa agenda. Um compromisso tem no minimo
 # uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
@@ -148,7 +149,6 @@ def adicionar(novoCompromisso):
 
   return True
 
-
 # Valida a prioridade.
 def prioridadeValida(pri:str):
   if len(pri) == 3:
@@ -157,7 +157,6 @@ def prioridadeValida(pri:str):
         return True
 
   return False
-
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
@@ -207,7 +206,6 @@ def dataValida(data:str) :
     else:
       return True
 
-
 # Valida que o string do projeto está no formato correto. 
 def projetoValido(proj:str):
   if len(proj) >= 2 and proj[0] == '+':
@@ -215,14 +213,12 @@ def projetoValido(proj:str):
 
   return False
 
-
 # Valida que o string do contexto está no formato correto. 
 def contextoValido(cont:str):
   if len(cont) >= 2 and cont[0] == '@':
     return True
 
   return False
-
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
 # extras no início e no fim.
@@ -340,18 +336,23 @@ def listar():
 
   listaCompromissos:List[Compromisso] = organizar(linhas)
 
-  listaOrdenadaData = ordenarPorDataHora(listaCompromissos)
-  listaOrdenadaPrioridade = ordenarPorPrioridade(listaOrdenadaData)
+  listaTuplasIndiceCompromisso = []
 
-  for i, compromisso in enumerate(listaOrdenadaPrioridade):
-    string:str = str(i) + ' ' + compromisso.stringTXT()
-    if compromisso.getPrioridade() == 'A':
+  for i, compromisso in enumerate(listaCompromissos):
+    listaTuplasIndiceCompromisso.append((i, compromisso))
+
+  listaTuplasOrdenadaData = ordenarPorDataHora(listaTuplasIndiceCompromisso)
+  listaTuplasOrdenadaPrioridade = ordenarPorPrioridade(listaTuplasOrdenadaData)
+
+  for tupla in listaTuplasOrdenadaPrioridade:
+    string:str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
+    if tupla[1].getPrioridade() == 'A':
       printCores(string, RED) #TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
-    elif compromisso.getPrioridade() == 'B':
+    elif tupla[1].getPrioridade() == 'B':
       printCores(string, YELLOW)
-    elif compromisso.getPrioridade() == 'C':
+    elif tupla[1].getPrioridade() == 'C':
       printCores(string, GREEN)
-    elif compromisso.getPrioridade() == 'D':
+    elif tupla[1].getPrioridade() == 'D':
       printCores(string, BLUE)
     else:
       print(string)
@@ -360,39 +361,135 @@ def listar():
   return True
 
 def ordenarPorDataHora(itens:List[Compromisso]):
-  return sorted(itens, key=lambda x : x.getDataOrdenacao())
+  return sorted(itens, key=lambda x : x[1].getDataOrdenacao())
 
 def ordenarPorPrioridade(itens:List[Compromisso]):
-  return sorted(itens, key=lambda x : x.getPrioridadeOrdenacao())
+  return sorted(itens, key=lambda x : x[1].getPrioridadeOrdenacao())
 
-def fazer(num):
+def fazer(num:int):
+  linhas = []
+  try:
+    arquivo = open(TODO_FILE, 'r')
+    for linha in arquivo:
+      linhas.append(linha)
+  except IOError as err:
+    print("Não foi possível ler para o arquivo " + TODO_FILE)
+    print(err)
+    return False
+  finally:
+    arquivo.close()
 
-  ################ COMPLETAR
+  atividadeConcluida:str = linhas.pop(num)
 
-  return
+  try:
+    arquivo = open(ARCHIVE_FILE, 'a')
+    arquivo.write(atividadeConcluida + "\n")
+  except IOError as err:
+    print("Não foi possível escrever para o arquivo " + ARCHIVE_FILE)
+    print(err)
+    return False
+  finally:
+    arquivo.close()
 
-def remover():
+  try:
+    arquivo = open(TODO_FILE, 'w')
+    for linha in linhas:
+      arquivo.write(linha)
+  except IOError as err:
+    print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+    print(err)
+    return False
+  finally:
+    arquivo.close()
 
-  ################ COMPLETAR
+  return True
 
-  return
+def remover(num:int):
+  try:
+    arquivo = open(TODO_FILE, 'r')
+  except IOError as err:
+    print("Não foi possível ler para o arquivo " + TODO_FILE)
+    print(err)
+    return False
+
+  linhas = []
+  for linha in arquivo:
+    linhas.append(linha)
+
+  if num >= len(linhas):
+    print('Não há atividade para o indice selecionado')
+    return False
+  linhas.pop(num)
+
+  arquivo.close()
+
+  try:
+    arquivo = open(TODO_FILE, 'w')
+  except IOError as err:
+    print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+    print(err)
+    return False
+
+  for linha in linhas:
+    arquivo.write(linha)
+
+  return True
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
 # num é o número da atividade cuja prioridade se planeja modificar, conforme
 # exibido pelo comando 'l'. 
-def priorizar(num, prioridade):
+def priorizar(num:int, prioridade:str):
+  try:
+    arquivo = open(TODO_FILE, 'r')
+  except IOError as err:
+    print("Não foi possível ler para o arquivo " + TODO_FILE)
+    print(err)
+    return False
 
-  ################ COMPLETAR
+  linhas = []
+  for linha in arquivo:
+    linhas.append(linha)
+  arquivo.close()
+
+  if num >= len(linhas):
+    print('Não há atividade para o indice selecionado')
+    return False
+
+  listaCompromissos = organizar(linhas)
+  listaCompromissos[num].adicionarPrioridade('(' + prioridade + ')')
+
+  try:
+    arquivo = open(TODO_FILE, 'w')
+  except IOError as err:
+    print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+    print(err)
+    return False
+
+  for compromisso in listaCompromissos:
+    arquivo.write(compromisso.stringTXT() + '\n')
+
+def desenhar(dias:int):
+  linhasCompletadas = []
+  try:
+    arquivo = open(ARCHIVE_FILE, 'r')
+    for linha in arquivo:
+      if linha != '':
+        linhasCompletadas.append(linha)
+  except IOError as err:
+    print("Não foi possível ler o arquivo " + TODO_FILE)
+    print(err)
+    return False
+  finally:
+    arquivo.close()
+
+  atividadesCompletadas = organizar(linhasCompletadas)
+  atividadesCompletadas.sort(key=lambda x: x.getDataOrdenacao(), reverse=False)
+
+  for linha in atividadesCompletadas:
+    print(linha.stringTXT())
+
 
   return
-
-def desenhar(dias):
-
-  ################ COMPLETAR
-
-  return
-
-
 
 # Esta função processa os comandos e informações passados através da linha de comando e identifica
 # que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
@@ -409,23 +506,19 @@ def processarComandos(comandos) :
   elif comandos[1] == LISTAR:
     listar()
   elif comandos[1] == REMOVER:
+    remover(int(comandos[2]))
     return
-
-    ################ COMPLETAR
-
   elif comandos[1] == FAZER:
+    fazer(int(comandos[2]))
     return
-
-    ################ COMPLETAR
-
   elif comandos[1] == PRIORIZAR:
+    priorizar(int(comandos[2]), comandos[3])
     return
-
-    ################ COMPLETAR
-
+  elif comandos[1] == DESENHAR:
+    desenhar(int(comandos[2]))
+    return
   else :
     print("Comando inválido.")
-
 
 # sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
 # invocado a partir da linha de comando e os elementos restantes são tudo que

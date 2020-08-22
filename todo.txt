@@ -3,22 +3,22 @@
 (A) Fazer o projeto da Disciplina de Algoritmos. +IN1076
 (B) Criar planilha para compartilhar com o financeiro para reembolso. +GNED
 (C) Aprender a mexer no github para avan�ar no projeto.
-220820 (A) Iniciar a transcri��o das entrevistas da Disserta��o +Disserta��o
-22082023 Participar de Oficina de Canais de Tra��o do CESARLabs +GNED
+(A) 220820 Iniciar a transcri��o das entrevistas da Disserta��o +Disserta��o
+22082023 (B) Participar de Oficina de Canais de Tra��o do CESARLabs +GNED
 22082020 Fazer o exerc�cio passado pelo professor Gabriel +Fitness
 (B) Emitir nota fiscal do servi�o prestado no programa Porto Digital +MTM
 31082020 1630 Realizar a oficina "Como arrasar fazendo apresenta��es" do Minas nas Escolas +MTM
 17082020 Enviar ativa��o para os leads da campanha do curso de Produtos +Job
 (C) Preparar ch� de fraldas de Mari
 01092018 1930 Ch� de Fraldas de Mari @CasadeMari
-190820 1900 Encontro com alunos do GNED SP +GNED @Zoom
+1900 190820 Encontro com alunos do GNED SP @Zoom +GNED
 (C) Escrever capitulo 3 da disserta��o +Disserta��o
 (C) Transcrever entrevista com a Porto Engenharia +Disserta��o
 (C) Transcrever entrevista com a Cardeal Distribuidora +Disserta��o
 23082020 Ler artigo passado por Profa Carina sobre GameJams +Disserta��o
 15092020 1930 Comemora��o do Anivers�rio de Camila @Restaurante
-100920 Reuni�o com a coordena��o de curso +GNED
-230820 Fazer o exerc�cio passado pelo professor Gabriel +Fitness @Academia
+(A) 100920 Reuni�o com a coordena��o de curso +GNED
+230820 Fazer o exerc�cio passado pelo professor Gabriel @Academia +Fitness
 24082020 Fazer o exerc�cio passado pelo professor Gabriel +Fitness
 25082020 Fazer o exerc�cio passado pelo professor Gabriel +Fitness
 (C) Subir as horas extras realizadas essa semana no Portal do Colaborador +Job
@@ -26,10 +26,6 @@
 (D) Escrever artigo sobre entrevistas Porto Digital +Disserta��o
 16092020 1900 Reuni�o de neg�cios e novas oportunidades +Job
 01092020 Organizar e participar do curso sobre Tend�ncias Digitais +Job
-fazer compras
-fazer compras
-fazer compras
 24112020 almocar @casa
-24112020 almocar baiao de dois @casa
 24112020 almocar baiao de dois @casa
 24112020 almocar baiao de dois @casa
