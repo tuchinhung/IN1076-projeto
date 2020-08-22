@@ -5,7 +5,7 @@ from typing import List
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
 
-RED   = "\033[1;31m"  
+RED   = "\033[1;31m"
 BLUE  = "\033[1;34m"
 CYAN  = "\033[1;36m"
 GREEN = "\033[0;32m"
@@ -20,18 +20,92 @@ FAZER = 'f'
 PRIORIZAR = 'p'
 LISTAR = 'l'
 
-class Compromisso: 
-  ################ COMPLETAR
-  def __init__(self, tupla):
-    ''''tupla(desc, pri, (data, hora, contexto, projeto))'''
-    self.desc = tupla[0]
-    self.pri = tupla[1]
-    self.data = tupla[2][0]
-    self.hora = tupla[2][1]
-    self.contexto = tupla[2][2]
-    self.projeto = tupla[2][3]
-    return
+# comp = Compromisso(descricao)
 
+class Compromisso:
+  def __init__(self, descricao:str, prioridade:str='',
+               data:str='', hora:str='', contexto:str='', projeto:str=''):
+
+    self.descricao:str = descricao
+    self.prioridade:str = ''
+    self.data:str = ''
+    self.hora:str = ''
+    self.contexto:str = ''
+    self.projeto:str = ''
+
+    self.adicionarPrioridade(prioridade)
+    self.adicionarData(data)
+    self.adicionarHora(hora)
+    self.adicionarContexto(contexto)
+    self.adicionarProjeto(projeto)
+
+  def adicionarPrioridade(self, prioridade:str):
+    if prioridadeValida(prioridade):
+      self.prioridade = prioridade
+
+  def adicionarData(self, data:str):
+    if dataValida(data):
+      self.data = data
+
+  def adicionarHora(self, hora:str):
+    if horaValida(hora):
+      self.hora = hora
+
+  def adicionarContexto(self, contexto:str):
+    if contextoValido(contexto):
+      self.contexto = contexto
+
+  def adicionarProjeto(self, projeto:str):
+    if projetoValido(projeto):
+      self.projeto = projeto
+
+  def getPrioridade(self) -> str:
+    if self.prioridade != '':
+      return self.prioridade[1]
+
+    return ''
+
+  def getDataOrdenacao(self):
+    ano = 9999
+    mes = 13
+    dia = 32
+
+    if self.data != '':
+      ano = int(self.data[4:8])
+      mes = int(self.data[2:4])
+      dia = int(self.data[0:2])
+
+    return (ano, mes, dia)
+
+  def getPrioridadeOrdenacao(self):
+    prioridade = 'ZZ'
+
+    if self.prioridade != '':
+      prioridade = self.prioridade[1]
+
+    return prioridade
+
+  def stringTXT(self):
+    texto:str =''
+    if self.data != '':
+      texto += self.data + ' '
+
+    if self.hora != '':
+      texto += self.hora + ' '
+
+    if self.prioridade != '':
+      texto += self.prioridade + ' '
+
+    if self.descricao != '':
+      texto += self.descricao
+
+    if self.contexto != '':
+      texto += ' ' + self.contexto
+
+    if self.projeto != '':
+      texto += ' ' + self.projeto
+
+    return texto
 
 # Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
 #
@@ -40,7 +114,7 @@ class Compromisso:
 
 def printCores(texto, cor) :
   print(cor + texto + RESET)
-  
+
 
 # Adiciona um compromisso aa agenda. Um compromisso tem no minimo
 # uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
@@ -52,18 +126,16 @@ def printCores(texto, cor) :
 #
 # extras tem como elementos data, hora, prioridade, contexto, projeto
 #
-def adicionar(descricao, extras):
+def adicionar(novoCompromisso):
 
-  # não é possível adicionar uma atividade que não possui descrição. 
-  if descricao  == '' :
+  # não é possível adicionar uma atividade que não possui descrição.
+  if novoCompromisso.descricao  == '' :
     return False
-  
 
-  ################ COMPLETAR
+  novaAtividade:str = novoCompromisso.stringTXT()
 
-
-  # Escreve no TODO_FILE. 
-  try: 
+  # Escreve no TODO_FILE.
+  try:
     fp = open(TODO_FILE, 'a')
     fp.write(novaAtividade + "\n")
   except IOError as err:
@@ -99,7 +171,7 @@ def horaValida(horaMin:str) :
     # Hora precisa ser entre 00 e 23
     if horas < 0 or horas > 23:
       return False
-    
+
     # Minuto precisa ser entre 00 e 59
     if minutos < 0 or minutos > 59:
       return False
@@ -174,9 +246,11 @@ def soLetras(palavra):
   return True
 
 def reverterSplit(tokens:List[str]) -> str:
-  string:str = tokens.pop(0)
-  while len(tokens):
-    string += " " + tokens.pop(0)
+  string:str = ''
+  if len(tokens):
+    string += tokens.pop(0)
+    while len(tokens):
+      string += " " + tokens.pop(0)
 
   return string
 
@@ -194,17 +268,17 @@ def reverterSplit(tokens:List[str]) -> str:
 # Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
 # data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
 # tudo que vier depois será considerado parte da descrição.
-def organizar(linhas):
-  itens = []
+def organizar(linhas:List[str]) -> List[Compromisso]:
+  itens:List[Compromisso] = []
 
   for l in linhas:
-    data = '' 
+    data = ''
     hora = ''
-    pri = ''
-    desc = ''
+    prioridade = ''
+    descricao = ''
     contexto = ''
     projeto = ''
-  
+
     l = l.strip() # remove espaços em branco e quebras de linha do começo e do fim
     tokens = l.split() # quebra o string em palavras
 
@@ -225,7 +299,7 @@ def organizar(linhas):
       elif horaValida(token):
         hora = token
       elif prioridadeValida(token):
-        pri = token
+        prioridade = token
       elif contextoValido(token):
         contexto = token
       elif projetoValido(token):
@@ -233,13 +307,14 @@ def organizar(linhas):
       else:
         tokensDescricao.append(token)
 
-    desc = reverterSplit(tokensDescricao)
-
-    tupla = (desc, pri, (data, hora, contexto, projeto))
+    # descricao = ' '.join(tokensDescricao)
+    # if len(tokensDescricao):
+    descricao = reverterSplit(tokensDescricao)
 
     # A linha abaixo inclui em itens um objeto contendo as informações relativas aos compromissos
     # nas várias linhas do arquivo.
-    itens.append(Compromisso(tupla))
+    itens.append(Compromisso(descricao, prioridade, data,
+                                hora, contexto, projeto))
 
   return itens
 
@@ -249,29 +324,52 @@ def organizar(linhas):
 # Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
 # (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
 # determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
-# é uma das tarefas básicas do projeto, porém. 
+# é uma das tarefas básicas do projeto, porém.
 def listar():
+  try:
+    arquivo = open(TODO_FILE, 'r')
+  except IOError as err:
+    print("Não foi possível ler para o arquivo " + TODO_FILE)
+    print(err)
+    return False
 
-  ################ COMPLETAR
-  return 
+  # organizar([linha for linha in arquivo])
+  linhas:List[str] = []
+  for linha in arquivo:
+    linhas.append(linha)
 
-def ordenarPorDataHora(itens):
+  listaCompromissos:List[Compromisso] = organizar(linhas)
 
-  ################ COMPLETAR
+  listaOrdenadaData = ordenarPorDataHora(listaCompromissos)
+  listaOrdenadaPrioridade = ordenarPorPrioridade(listaOrdenadaData)
 
-  return itens
-   
-def ordenarPorPrioridade(itens):
+  for i, compromisso in enumerate(listaOrdenadaPrioridade):
+    string:str = str(i) + ' ' + compromisso.stringTXT()
+    if compromisso.getPrioridade() == 'A':
+      printCores(string, RED) #TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+    elif compromisso.getPrioridade() == 'B':
+      printCores(string, YELLOW)
+    elif compromisso.getPrioridade() == 'C':
+      printCores(string, GREEN)
+    elif compromisso.getPrioridade() == 'D':
+      printCores(string, BLUE)
+    else:
+      print(string)
 
-  ################ COMPLETAR
 
-  return itens
+  return True
+
+def ordenarPorDataHora(itens:List[Compromisso]):
+  return sorted(itens, key=lambda x : x.getDataOrdenacao())
+
+def ordenarPorPrioridade(itens:List[Compromisso]):
+  return sorted(itens, key=lambda x : x.getPrioridadeOrdenacao())
 
 def fazer(num):
 
   ################ COMPLETAR
 
-  return 
+  return
 
 def remover():
 
@@ -286,12 +384,12 @@ def priorizar(num, prioridade):
 
   ################ COMPLETAR
 
-  return 
+  return
 
-def desenhar(dias): 
+def desenhar(dias):
 
   ################ COMPLETAR
-  
+
   return
 
 
@@ -306,32 +404,29 @@ def processarComandos(comandos) :
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
     comandos.pop(0) # remove 'adicionar'
-    itemParaAdicionar = organizar([' '.join(comandos)])[0]
-    # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
-    adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # novos itens não têm prioridade
+    itemParaAdicionar:Compromisso = organizar([' '.join(comandos)])[0]
+    adicionar(itemParaAdicionar) # novos itens não têm prioridade
   elif comandos[1] == LISTAR:
-    return    
+    listar()
+  elif comandos[1] == REMOVER:
+    return
+
     ################ COMPLETAR
 
-  elif comandos[1] == REMOVER:
-    return    
-
-    ################ COMPLETAR    
-
   elif comandos[1] == FAZER:
-    return    
+    return
 
     ################ COMPLETAR
 
   elif comandos[1] == PRIORIZAR:
-    return    
+    return
 
     ################ COMPLETAR
 
   else :
     print("Comando inválido.")
-    
-  
+
+
 # sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
 # invocado a partir da linha de comando e os elementos restantes são tudo que
 # foi fornecido em sequência. Por exemplo, se o programa foi invocado como
@@ -343,5 +438,5 @@ def processarComandos(comandos) :
 # ['agenda.py', 'a', 'Mudar', 'de', 'nome']
 
 # Main para possibilitar importar as funções para teste
-# if __name__ == "__main__":
-  # processarComandos(sys.argv)
+if __name__ == "__main__":
+  processarComandos(sys.argv)

@@ -14,12 +14,12 @@ Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
 - [x] Tarefa 6
 - [x] Tarefa 7
 - [x] Tarefa 8
-- [ ] Tarefa 9
-- [ ] Tarefa 10
-- [ ] Tarefa 11
-- [ ] Tarefa 12
-- [ ] Tarefa 13
-- [ ] Tarefa 14
+- [x] Tarefa 9
+- [x] Tarefa 10
+- [x] Tarefa 11
+- [x] Tarefa 12
+- [x] Tarefa 13
+- [x] Tarefa 14
 - [ ] Tarefa 15
 - [ ] Tarefa 16
 - [ ] Tarefa 17
@@ -28,4 +28,23 @@ Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
 - [ ] Tarefa 20
 - [ ] Tarefa 21
 - [ ] Tarefa 22
+
+## Duvidas
+
+em especificacao_projeto.pdf:
+- Tarefa 8: Complete a implementação da função organizar(). Como dito antes, essa **função recebe
+uma lista de strings** representando atividades e **devolve uma lista de objetos** com as informações dessas
+atividades organizadas. Para completar essa função, será necessário complementar a implementação
+da classe Compromisso. Note que seus atributos, exceto pela descrição, são opcionais.
+
+no codigo antes da função organizar:
+- Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, **devolve
+  uma lista de tuplas** contendo os pedaços de cada linha, conforme o seguinte
+  
+  formato:
+  
+  (descrição, prioridade, (data, hora, contexto, projeto))
+
+
+- printCores(string, RED) #TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
 
