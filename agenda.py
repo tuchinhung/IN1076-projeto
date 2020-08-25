@@ -23,8 +23,6 @@ LISTAR = 'l'
 DESENHAR = 'g'
 
 
-# comp = Compromisso(descricao)
-
 class Compromisso:
     def __init__(self, descricao: str, prioridade: str = '',
                  data: str = '', hora: str = '', contexto: str = '', projeto: str = ''):
@@ -113,26 +111,27 @@ class Compromisso:
 
         return texto
 
-
-# Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
-#
-# printCores('Oi mundo!', RED)
-# printCores('Texto amarelo e negrito', YELLOW + BOLD)
 def printCores(texto, cor):
+    '''
+    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
+
+    printCores('Oi mundo!', RED)
+    printCores('Texto amarelo e negrito', YELLOW + BOLD)
+    '''
     print(cor + texto + RESET)
 
-
-# Adiciona um compromisso aa agenda. Um compromisso tem no minimo
-# uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
-# data (formato DDMMAAAA), um horário (formato HHMM), uma prioridade de A a Z, 
-# um contexto onde a atividade será realizada (precedido pelo caractere
-# '@') e um projeto do qual faz parte (precedido pelo caractere '+'). Esses
-# itens opcionais podem ser implementados como uma tupla, dicionário  ou objeto. A função
-# recebe esse item através do parâmetro extras.
-#
-# extras tem como elementos data, hora, prioridade, contexto, projeto
-#
 def adicionar(novoCompromisso):
+    '''
+    Adiciona um compromisso aa agenda. Um compromisso tem no minimo
+    uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
+    data (formato DDMMAAAA), um horário (formato HHMM), uma prioridade de A a Z, 
+    um contexto onde a atividade será realizada (precedido pelo caractere
+    '@') e um projeto do qual faz parte (precedido pelo caractere '+'). Esses
+    itens opcionais podem ser implementados como uma tupla, dicionário  ou objeto. A função
+    recebe esse item através do parâmetro extras.
+
+    extras tem como elementos data, hora, prioridade, contexto, projeto
+    '''
     # não é possível adicionar uma atividade que não possui descrição.
     if novoCompromisso.descricao == '':
         return False
@@ -152,9 +151,8 @@ def adicionar(novoCompromisso):
 
     return True
 
-
-# Valida a prioridade.
 def prioridadeValida(pri: str):
+    '''Valida a prioridade.'''
     if len(pri) == 3:
         if pri[0] == "(" and pri[2] == ")":
             if soLetras(pri[1]):
@@ -162,10 +160,11 @@ def prioridadeValida(pri: str):
 
     return False
 
-
-# Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
-# de dois blocos de 12 (AM e PM), como nos EUA.
 def horaValida(horaMin: str):
+    '''
+    Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
+    de dois blocos de 12 (AM e PM), como nos EUA.
+    '''
     if len(horaMin) != 4 or not soDigitos(horaMin):
         return False
     else:
@@ -182,11 +181,12 @@ def horaValida(horaMin: str):
 
         return True
 
-
-# Valida datas. Verificar inclusive se não estamos tentando
-# colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
-# de que um ano é bissexto. 
 def dataValida(data: str):
+    '''
+    Valida datas. Verificar inclusive se não estamos tentando
+    colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
+    de que um ano é bissexto. 
+    '''
     if len(data) != 8 or not soDigitos(data):
         return False
     else:
@@ -212,33 +212,33 @@ def dataValida(data: str):
         else:
             return True
 
-
-# Valida que o string do projeto está no formato correto.
 def projetoValido(proj: str):
+    '''
+    Valida que o string do projeto está no formato correto.
+    '''
     if len(proj) >= 2 and proj[0] == '+':
         return True
 
     return False
 
-
-# Valida que o string do contexto está no formato correto.
 def contextoValido(cont: str):
+    '''Valida que o string do contexto está no formato correto.'''
     if len(cont) >= 2 and cont[0] == '@':
         return True
 
     return False
 
-
-# Valida que a data ou a hora contém apenas dígitos, desprezando espaços
-# extras no início e no fim.
 def soDigitos(numero):
+    '''
+    Valida que a data ou a hora contém apenas dígitos, desprezando espaços
+    extras no início e no fim.
+    '''
     if type(numero) != str:
         return False
     for x in numero:
         if x < '0' or x > '9':
             return False
     return True
-
 
 def soLetras(palavra):
     if type(palavra) != str:
@@ -251,7 +251,6 @@ def soLetras(palavra):
 
     return True
 
-
 def reverterSplit(tokens: List[str]) -> str:
     string: str = ''
     if len(tokens):
@@ -261,22 +260,23 @@ def reverterSplit(tokens: List[str]) -> str:
 
     return string
 
-
-# Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
-# uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
-# formato:
-#
-# (descrição, prioridade, (data, hora, contexto, projeto))
-#
-# É importante lembrar que linhas do arquivo todo.txt devem estar organizadas de acordo com o
-# seguinte formato:
-#
-# DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
-#
-# Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
-# data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
-# tudo que vier depois será considerado parte da descrição.
 def organizar(linhas: List[str]) -> List[Compromisso]:
+    '''
+    Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
+    uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
+    formato:
+
+    (descrição, prioridade, (data, hora, contexto, projeto))
+
+    É importante lembrar que linhas do arquivo todo.txt devem estar organizadas de acordo com o
+    seguinte formato:
+
+    DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
+
+    Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
+    data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
+    tudo que vier depois será considerado parte da descrição.
+    '''
     itens: List[Compromisso] = []
 
     for l in linhas:
@@ -326,15 +326,16 @@ def organizar(linhas: List[str]) -> List[Compromisso]:
 
     return itens
 
-
-# Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
-# como se espera (com os separadores apropridados). 
-#
-# Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
-# (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
-# determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
-# é uma das tarefas básicas do projeto, porém.
 def listar():
+    '''
+    Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
+    como se espera (com os separadores apropridados). 
+
+    Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
+    (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
+    determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
+    é uma das tarefas básicas do projeto, porém.
+    '''
     try:
         arquivo = open(TODO_FILE, 'r')
     except IOError as err:
@@ -373,14 +374,20 @@ def listar():
 
     return True
 
-
 def ordenarPorDataHora(itens: List[Compromisso]):
-    return sorted(itens, key=lambda x: x[1].getDataOrdenacao())
+    '''
+    Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
+    como se espera (com os separadores apropridados). 
 
+    Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
+    (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
+    determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
+    é uma das tarefas básicas do projeto, porém.
+    '''
+    return sorted(itens, key=lambda x: x[1].getDataOrdenacao())
 
 def ordenarPorPrioridade(itens: List[Compromisso]):
     return sorted(itens, key=lambda x: x[1].getPrioridadeOrdenacao())
-
 
 def fazer(num: int):
     linhas = []
@@ -420,7 +427,6 @@ def fazer(num: int):
 
     return True
 
-
 def remover(num: int):
     try:
         arquivo = open(TODO_FILE, 'r')
@@ -452,11 +458,12 @@ def remover(num: int):
 
     return True
 
-
-# prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
-# num é o número da atividade cuja prioridade se planeja modificar, conforme
-# exibido pelo comando 'l'. 
 def priorizar(num: int, prioridade: str):
+    '''
+    prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
+    num é o número da atividade cuja prioridade se planeja modificar, conforme
+    exibido pelo comando 'l'. 
+    '''
     try:
         arquivo = open(TODO_FILE, 'r')
     except IOError as err:
@@ -485,7 +492,6 @@ def priorizar(num: int, prioridade: str):
 
     for compromisso in listaCompromissos:
         arquivo.write(compromisso.stringTXT() + '\n')
-
 
 def desenhar(dias: int):
     linhasCompletadas = []
@@ -539,14 +545,16 @@ def desenhar(dias: int):
 
     return
 
-
-# Esta função processa os comandos e informações passados através da linha de comando e identifica
-# que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
-# isso significa que a função adicionar() deve ser invocada para registrar a nova atividade.
-# O bloco principal fica responsável também por tirar espaços em branco no início e fim dos strings
-# usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
-# projetos. 
 def processarComandos(comandos):
+    '''
+    Esta função processa os comandos e informações passados através da linha de comando e identifica
+    que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
+    isso significa que a função adicionar() deve ser invocada para registrar a nova atividade.
+    O bloco principal fica responsável também por tirar espaços em branco no início e fim dos strings
+    usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
+    projetos. 
+    '''
+
     if comandos[1] == ADICIONAR:
         comandos.pop(0)  # remove 'agenda.py'
         comandos.pop(0)  # remove 'adicionar'
@@ -569,17 +577,17 @@ def processarComandos(comandos):
     else:
         print("Comando inválido.")
 
-
-# sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
-# invocado a partir da linha de comando e os elementos restantes são tudo que
-# foi fornecido em sequência. Por exemplo, se o programa foi invocado como
-#
-# python3 agenda.py a Mudar de nome.
-#
-# sys.argv terá como conteúdo
-#
-# ['agenda.py', 'a', 'Mudar', 'de', 'nome']
-
-# Main para possibilitar importar as funções para teste
 if __name__ == "__main__":
+    '''
+    sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
+    invocado a partir da linha de comando e os elementos restantes são tudo que
+    foi fornecido em sequência. Por exemplo, se o programa foi invocado como
+
+    python3 agenda.py a Mudar de nome.
+
+    sys.argv terá como conteúdo
+
+    ['agenda.py', 'a', 'Mudar', 'de', 'nome']
+    Main para possibilitar importar as funções para teste
+    '''
     processarComandos(sys.argv)
