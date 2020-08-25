@@ -24,8 +24,8 @@ DESENHAR = 'g'
 
 
 class Compromisso:
-    def __init__(self, descricao: str, prioridade: str = '',
-                 data: str = '', hora: str = '', contexto: str = '', projeto: str = ''):
+    def __init__(self, descricao: str, prioridade: str = '', data: str = '',
+                hora: str = '', contexto: str = '', projeto: str = ''):
 
         self.descricao: str = descricao
         self.prioridade: str = ''
@@ -111,14 +111,72 @@ class Compromisso:
 
         return texto
 
-def printCores(texto, cor):
+def organizar(linhas: List[str]) -> List[Compromisso]:
     '''
-    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
+    Dada uma lista de linhas de texto, 
+    devove uma lista de objetos do tipo Compromisso
 
-    printCores('Oi mundo!', RED)
-    printCores('Texto amarelo e negrito', YELLOW + BOLD)
+    É importante lembrar que linhas do arquivo todo.txt devem estar organizadas 
+    de acordo com o seguinte formato:
+
+    DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
+
+    Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora 
+    do formato, por exemplo, data que não tem todos os componentes ou prioridade
+    com mais de um caractere (além dos parênteses), tudo que vier depois será 
+    considerado parte da descrição.
     '''
-    print(cor + texto + RESET)
+    compromissos: List[Compromisso] = []
+
+    for l in linhas:
+        data:str = ''
+        hora:str = ''
+        prioridade:str = ''
+        descricao:str = ''
+        contexto:str = ''
+        projeto:str = ''
+
+        l = l.strip()  # remove espaços em branco e quebras de linha
+        tokens:List[str] = l.split()  # quebra o string em palavras
+
+        # Processa os tokens um a um, verificando se são as partes da atividade.
+        tokensRestantes:List[str] = []
+        while len(tokens):
+            token:str = tokens.pop(0)
+
+            if dataValida(token):
+                data = token
+            elif horaValida(token):
+                hora = token
+            elif prioridadeValida(token):
+                prioridade = token
+            elif contextoValido(token):
+                contexto = token
+            elif projetoValido(token):
+                projeto = token
+            else:
+                tokensRestantes.append(token)
+
+        # Reverte uma lista de tokens para uma string separada por espaços
+        descricao = reverterSplit(tokensRestantes)
+
+        # A linha abaixo inclui em compromissos um objeto contendo as 
+        # informações relativas aos compromissos nas várias linhas do arquivo.
+        compromissos.append(Compromisso(descricao=descricao,
+                            prioridade=prioridade, data=data, hora=hora,
+                            contexto=contexto, projeto=projeto))
+
+    return compromissos
+
+def reverterSplit(tokens: List[str]) -> str:
+    string: str = ''
+    # Checa primeiro se a lista de tokens não esta vazia
+    if len(tokens):
+        string += tokens.pop(0)
+        while len(tokens):
+            string += " " + tokens.pop(0)
+
+    return string
 
 def adicionar(novoCompromisso):
     '''
@@ -150,6 +208,15 @@ def adicionar(novoCompromisso):
         fp.close()
 
     return True
+
+def printCores(texto, cor):
+    '''
+    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
+
+    printCores('Oi mundo!', RED)
+    printCores('Texto amarelo e negrito', YELLOW + BOLD)
+    '''
+    print(cor + texto + RESET)
 
 def prioridadeValida(pri: str):
     '''Valida a prioridade.'''
@@ -251,80 +318,6 @@ def soLetras(palavra):
 
     return True
 
-def reverterSplit(tokens: List[str]) -> str:
-    string: str = ''
-    if len(tokens):
-        string += tokens.pop(0)
-        while len(tokens):
-            string += " " + tokens.pop(0)
-
-    return string
-
-def organizar(linhas: List[str]) -> List[Compromisso]:
-    '''
-    Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, devolve
-    uma lista de tuplas contendo os pedaços de cada linha, conforme o seguinte
-    formato:
-
-    (descrição, prioridade, (data, hora, contexto, projeto))
-
-    É importante lembrar que linhas do arquivo todo.txt devem estar organizadas de acordo com o
-    seguinte formato:
-
-    DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
-
-    Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
-    data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
-    tudo que vier depois será considerado parte da descrição.
-    '''
-    itens: List[Compromisso] = []
-
-    for l in linhas:
-        data = ''
-        hora = ''
-        prioridade = ''
-        descricao = ''
-        contexto = ''
-        projeto = ''
-
-        l = l.strip()  # remove espaços em branco e quebras de linha do começo e do fim
-        tokens = l.split()  # quebra o string em palavras
-
-        # Processa os tokens um a um, verificando se são as partes da atividade.
-        # Por exemplo, se o primeiro token é uma data válida, deve ser guardado
-        # na variável data e posteriormente removido a lista de tokens. Feito isso,
-        # é só repetir o processo verificando se o primeiro token é uma hora. Depois,
-        # faz-se o mesmo para prioridade. Neste ponto, verifica-se os últimos tokens
-        # para saber se são contexto e/ou projeto. Quando isso terminar, o que sobrar
-        # corresponde à descrição. É só transformar a lista de tokens em um string e
-        # construir a tupla com as informações disponíveis.
-        tokensDescricao = []
-        while len(tokens):
-            token = tokens.pop(0)
-
-            if dataValida(token):
-                data = token
-            elif horaValida(token):
-                hora = token
-            elif prioridadeValida(token):
-                prioridade = token
-            elif contextoValido(token):
-                contexto = token
-            elif projetoValido(token):
-                projeto = token
-            else:
-                tokensDescricao.append(token)
-
-        # descricao = ' '.join(tokensDescricao)
-        # if len(tokensDescricao):
-        descricao = reverterSplit(tokensDescricao)
-
-        # A linha abaixo inclui em itens um objeto contendo as informações relativas aos compromissos
-        # nas várias linhas do arquivo.
-        itens.append(Compromisso(descricao, prioridade, data,
-                                 hora, contexto, projeto))
-
-    return itens
 
 def listar():
     '''
