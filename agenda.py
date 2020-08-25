@@ -524,7 +524,17 @@ def desenhar(dias: int):
 
     x = range(dias)  # [0, 1, 2 , 3, 4]
     # TODO CONFIGURAR O GRAFICO
-    plt.plot(x, atividadesCompletadasPorDia)
+    #plt.plot(x, atividadesCompletadasPorDia)
+    #plt.title('ATIVIDADES REALIZADAS')
+
+    fig, axs = plt.subplots()
+    axs.bar(x, atividadesCompletadasPorDia)
+    #axs[1].scatter(names, values)
+    #axs[2].plot(names, values)
+    #fig.suptitle('FELIPE ROCKS')
+    plt.title('ATIVIDADES REALIZADAS')
+    plt.xlabel('dias')
+    plt.ylabel('quantidade de atividades realizadas')
     plt.show()
 
     return
