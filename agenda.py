@@ -1,6 +1,8 @@
 import sys
+import time
 import matplotlib.pyplot as plt
 
+from datetime import datetime
 from typing import List
 
 TODO_FILE = 'todo.txt'
@@ -40,6 +42,7 @@ class Compromisso:
         self.adicionarContexto(contexto)
         self.adicionarProjeto(projeto)
 
+
     def adicionarPrioridade(self, prioridade: str):
         if prioridadeValida(prioridade):
             self.prioridade = prioridade
@@ -68,18 +71,18 @@ class Compromisso:
 
         return ''
 
-    def getDataOrdenacao(self):
-        # TODO Usar Timestamp
-        ano = 9999
-        mes = 13
-        dia = 32
+    def getTimestamp(self):
+        if self.data == '' and self.hora == '':
+            data = datetime.max
+        elif self.data != '' and self.hora == '':
+            data = datetime.strptime(self.data, "%d%m%Y")
+        elif self.data == '' and self.hora != '':
+            dataMaxima = '31129999'
+            data = datetime.strptime(dataMaxima + self.hora, "%d%m%Y%H%M")
+        else:
+            data = datetime.strptime(self.data + self.hora, "%d%m%Y%H%M")
 
-        if self.data != '':
-            ano = int(self.data[4:8])
-            mes = int(self.data[2:4])
-            dia = int(self.data[0:2])
-
-        return (ano, mes, dia)
+        return time.mktime(data.timetuple())
 
     def getPrioridadeOrdenacao(self):
         prioridade = 'ZZ'
@@ -259,8 +262,7 @@ def listar() -> bool:
     for tupla in listaTuplasOrdenadaPrioridade:
         string: str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
         if tupla[1].getPrioridade() == 'A':
-            printCores(string,
-                    RED + BOLD)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+            printCores(string, RED + BOLD)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
         elif tupla[1].getPrioridade() == 'B':
             printCores(string, YELLOW)
         elif tupla[1].getPrioridade() == 'C':
@@ -271,6 +273,12 @@ def listar() -> bool:
             print(string)
 
     return True
+
+def ordenarPorDataHora(itens: List[Compromisso]):
+    return sorted(itens, key=lambda x: x[1].getTimestamp())
+
+def ordenarPorPrioridade(itens: List[Compromisso]):
+    return sorted(itens, key=lambda x: x[1].getPrioridadeOrdenacao())
 
 def printCores(texto, cor):
     '''
@@ -380,21 +388,6 @@ def soLetras(palavra):
             return False
 
     return True
-
-def ordenarPorDataHora(itens: List[Compromisso]):
-    '''
-    Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
-    como se espera (com os separadores apropridados). 
-
-    Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
-    (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
-    determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
-    é uma das tarefas básicas do projeto, porém.
-    '''
-    return sorted(itens, key=lambda x: x[1].getDataOrdenacao())
-
-def ordenarPorPrioridade(itens: List[Compromisso]):
-    return sorted(itens, key=lambda x: x[1].getPrioridadeOrdenacao())
 
 def fazer(num: int):
     linhas = []
