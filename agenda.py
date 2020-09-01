@@ -212,6 +212,66 @@ def adicionar(novoCompromisso: Compromisso) -> bool:
 
     return True
 
+def listar() -> bool:
+    '''
+    Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
+    como se espera (com os separadores apropridados). 
+
+    TODO Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
+    (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
+    determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
+    é uma das tarefas básicas do projeto, porém.
+    '''
+    linhas: List[str] = []
+
+    # Lê linhas do arquivo todo.txt e adciona suas linhas a uma lista de strings
+    try:
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
+    except IOError as err:
+        print("Não foi possível ler para o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    # Retorna uma lista de objetos compromisso a partir das linhas do arquivo
+    listaCompromissos: List[Compromisso] = organizar(linhas)
+
+    # Converte a lista de objetos Compromisso para uma 
+    # lista de tuplas (indice, Compromisso), para manter identificar a linha do
+    # arquivo após operação de ordenação
+    listaTuplasIndiceCompromisso = []
+    for i, compromisso in enumerate(listaCompromissos):
+        listaTuplasIndiceCompromisso.append((i, compromisso))
+
+    # Ordena a lista por data
+    listaTuplasOrdenadaData = ordenarPorDataHora(listaTuplasIndiceCompromisso)
+
+    # Ordena a lista por prioridade, mantendo ordem por data nos casos com mesma
+    # prioridade
+    listaTuplasOrdenadaPrioridade = ordenarPorPrioridade(listaTuplasOrdenadaData)
+
+
+    # Imprime no terminal as atividade ordenadas, utilizando cores para 
+    # distinguir prioridades de A a D
+    for tupla in listaTuplasOrdenadaPrioridade:
+        string: str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
+        if tupla[1].getPrioridade() == 'A':
+            printCores(string,
+                    RED + BOLD)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+        elif tupla[1].getPrioridade() == 'B':
+            printCores(string, YELLOW)
+        elif tupla[1].getPrioridade() == 'C':
+            printCores(string, GREEN)
+        elif tupla[1].getPrioridade() == 'D':
+            printCores(string, BLUE)
+        else:
+            print(string)
+
+    return True
+
 def printCores(texto, cor):
     '''
     Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
@@ -318,54 +378,6 @@ def soLetras(palavra):
     for caractere in palavraMinusculo:
         if caractere < 'a' or caractere > 'z':
             return False
-
-    return True
-
-def listar():
-    '''
-    Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
-    como se espera (com os separadores apropridados). 
-
-    Uma extensão possível é listar com base em diversos critérios: (i) atividades com certa prioridade;
-    (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
-    determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
-    é uma das tarefas básicas do projeto, porém.
-    '''
-    try:
-        arquivo = open(TODO_FILE, 'r')
-    except IOError as err:
-        print("Não foi possível ler para o arquivo " + TODO_FILE)
-        print(err)
-        return False
-
-    # organizar([linha for linha in arquivo])
-    linhas: List[str] = []
-    for linha in arquivo:
-        linhas.append(linha)
-
-    listaCompromissos: List[Compromisso] = organizar(linhas)
-
-    listaTuplasIndiceCompromisso = []
-
-    for i, compromisso in enumerate(listaCompromissos):
-        listaTuplasIndiceCompromisso.append((i, compromisso))
-
-    listaTuplasOrdenadaData = ordenarPorDataHora(listaTuplasIndiceCompromisso)
-    listaTuplasOrdenadaPrioridade = ordenarPorPrioridade(listaTuplasOrdenadaData)
-
-    for tupla in listaTuplasOrdenadaPrioridade:
-        string: str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
-        if tupla[1].getPrioridade() == 'A':
-            printCores(string,
-                    RED)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
-        elif tupla[1].getPrioridade() == 'B':
-            printCores(string, YELLOW)
-        elif tupla[1].getPrioridade() == 'C':
-            printCores(string, GREEN)
-        elif tupla[1].getPrioridade() == 'D':
-            printCores(string, BLUE)
-        else:
-            print(string)
 
     return True
 
