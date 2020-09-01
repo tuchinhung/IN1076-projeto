@@ -169,6 +169,9 @@ def organizar(linhas: List[str]) -> List[Compromisso]:
     return compromissos
 
 def reverterSplit(tokens: List[str]) -> str:
+    '''
+    Junta uma lista de palavras em uma unica linha, separada por espaços
+    '''
     string: str = ''
     # Checa primeiro se a lista de tokens não esta vazia
     if len(tokens):
@@ -178,7 +181,7 @@ def reverterSplit(tokens: List[str]) -> str:
 
     return string
 
-def adicionar(novoCompromisso):
+def adicionar(novoCompromisso: Compromisso) -> bool:
     '''
     Adiciona um compromisso aa agenda. Um compromisso tem no minimo
     uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
@@ -355,7 +358,7 @@ def listar():
         string: str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
         if tupla[1].getPrioridade() == 'A':
             printCores(string,
-                       RED)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+                    RED)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
         elif tupla[1].getPrioridade() == 'B':
             printCores(string, YELLOW)
         elif tupla[1].getPrioridade() == 'C':
