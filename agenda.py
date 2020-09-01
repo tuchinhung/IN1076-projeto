@@ -139,26 +139,25 @@ def organizar(linhas: List[str]) -> List[Compromisso]:
         l = l.strip()  # remove espaços em branco e quebras de linha
         tokens:List[str] = l.split()  # quebra o string em palavras
 
-        # Processa os tokens um a um, verificando se são as partes da atividade.
-        tokensRestantes:List[str] = []
-        while len(tokens):
-            token:str = tokens.pop(0)
-
-            if dataValida(token):
-                data = token
-            elif horaValida(token):
-                hora = token
-            elif prioridadeValida(token):
-                prioridade = token
-            elif contextoValido(token):
-                contexto = token
-            elif projetoValido(token):
-                projeto = token
-            else:
-                tokensRestantes.append(token)
+        # Checa os primeiros tokens por data, hora e prioridade
+        if len(tokens) and dataValida(tokens[0]):
+            data = tokens.pop(0)
+        if len(tokens) and horaValida(tokens[0]):
+            hora = tokens.pop(0)
+        if len(tokens) and prioridadeValida(tokens[0]):
+            prioridade = tokens.pop(0)
+        
+        # Checa os ultimos tokens por projeto e contexto
+        if len(tokens) and projetoValido(tokens[-1]):
+            projeto = tokens.pop(-1)
+        if len(tokens) and contextoValido(tokens[-1]):
+            contexto = tokens.pop(-1)
+        
+        # A logica utilizada acima permite que o usuario use formatos na
+        # descrição sem que sejam confundidos com os itens opcionais 
 
         # Reverte uma lista de tokens para uma string separada por espaços
-        descricao = reverterSplit(tokensRestantes)
+        descricao = reverterSplit(tokens)
 
         # A linha abaixo inclui em compromissos um objeto contendo as 
         # informações relativas aos compromissos nas várias linhas do arquivo.
@@ -188,27 +187,28 @@ def adicionar(novoCompromisso: Compromisso) -> bool:
     data (formato DDMMAAAA), um horário (formato HHMM), uma prioridade de A a Z, 
     um contexto onde a atividade será realizada (precedido pelo caractere
     '@') e um projeto do qual faz parte (precedido pelo caractere '+'). Esses
-    itens opcionais podem ser implementados como uma tupla, dicionário  ou objeto. A função
-    recebe esse item através do parâmetro extras.
+    itens opcionais podem ser implementados como uma tupla, dicionário 
+    ou objeto. A função recebe esse item através do parâmetro extras.
 
     extras tem como elementos data, hora, prioridade, contexto, projeto
     '''
     # não é possível adicionar uma atividade que não possui descrição.
     if novoCompromisso.descricao == '':
+        print("Não é possível adicionar uma atividade que não possui descrição")
         return False
 
     novaAtividade: str = novoCompromisso.stringTXT()
 
-    # Escreve no TODO_FILE.
+    # Escreve atividade no TODO_FILE.
     try:
-        fp = open(TODO_FILE, 'a')
-        fp.write(novaAtividade + "\n")
+        arquivoTODO = open(TODO_FILE, 'a')
+        arquivoTODO.write(novaAtividade + "\n")
     except IOError as err:
         print("Não foi possível escrever para o arquivo " + TODO_FILE)
         print(err)
         return False
     finally:
-        fp.close()
+        arquivoTODO.close()
 
     return True
 
@@ -320,7 +320,6 @@ def soLetras(palavra):
             return False
 
     return True
-
 
 def listar():
     '''
@@ -550,28 +549,32 @@ def processarComandos(comandos):
     usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
     projetos. 
     '''
-
-    if comandos[1] == ADICIONAR:
-        comandos.pop(0)  # remove 'agenda.py'
-        comandos.pop(0)  # remove 'adicionar'
-        itemParaAdicionar: Compromisso = organizar([' '.join(comandos)])[0]
-        adicionar(itemParaAdicionar)  # novos itens não têm prioridade
-    elif comandos[1] == LISTAR:
-        listar()
-    elif comandos[1] == REMOVER:
-        remover(int(comandos[2]))
-        return
-    elif comandos[1] == FAZER:
-        fazer(int(comandos[2]))
-        return
-    elif comandos[1] == PRIORIZAR:
-        priorizar(int(comandos[2]), comandos[3])
-        return
-    elif comandos[1] == DESENHAR:
-        desenhar(int(comandos[2]))
-        return
+    if len(comandos) > 1:
+        if comandos[1] == ADICIONAR:
+            comandos.pop(0)  # remove 'agenda.py'
+            comandos.pop(0)  # remove 'adicionar'
+            itemParaAdicionar: Compromisso = organizar([' '.join(comandos)])[0]
+            if adicionar(itemParaAdicionar):  # novos itens não têm prioridade
+                print("Atividade adicionada com sucesso à agenda")
+        elif comandos[1] == LISTAR:
+            listar()
+        elif comandos[1] == REMOVER:
+            remover(int(comandos[2]))
+            return
+        elif comandos[1] == FAZER:
+            fazer(int(comandos[2]))
+            return
+        elif comandos[1] == PRIORIZAR:
+            priorizar(int(comandos[2]), comandos[3])
+            return
+        elif comandos[1] == DESENHAR:
+            desenhar(int(comandos[2]))
+            return
+        else:
+            print("Comando inválido.")
     else:
-        print("Comando inválido.")
+        print("É preciso mandar um comando na chamada da função")
+        print("Uso: python agenda.py (comando)")
 
 if __name__ == "__main__":
     '''
@@ -586,4 +589,6 @@ if __name__ == "__main__":
     ['agenda.py', 'a', 'Mudar', 'de', 'nome']
     Main para possibilitar importar as funções para teste
     '''
+
     processarComandos(sys.argv)
+
