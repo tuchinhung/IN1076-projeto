@@ -71,7 +71,7 @@ class Compromisso:
 
         return ''
 
-    def getTimestamp(self):
+    def getDatetime(self):
         if self.data == '' and self.hora == '':
             data = datetime.max
         elif self.data != '' and self.hora == '':
@@ -82,7 +82,7 @@ class Compromisso:
         else:
             data = datetime.strptime(self.data + self.hora, "%d%m%Y%H%M")
 
-        return time.mktime(data.timetuple())
+        return data
 
     def getPrioridadeOrdenacao(self):
         prioridade = 'ZZ'
@@ -113,6 +113,30 @@ class Compromisso:
             texto += ' ' + self.projeto
 
         return texto
+
+    def stringTerminal(self):
+        texto: str = ''
+
+        if self.data != '':
+            texto += self.data[0:2] + '/' + self.data[2:4] + '/' + self.data[4:8] + ' '
+
+        if self.hora != '':
+            texto += self.hora[0:2] + 'h' + self.hora[2:4] + 'm' + ' '
+
+        if self.prioridade != '':
+            texto += self.prioridade + ' '
+
+        if self.descricao != '':
+            texto += self.descricao
+
+        if self.contexto != '':
+            texto += ' ' + self.contexto
+
+        if self.projeto != '':
+            texto += ' ' + self.projeto
+
+        return texto
+
 
 def organizar(linhas: List[str]) -> List[Compromisso]:
     '''
@@ -249,10 +273,10 @@ def listar() -> bool:
     for i, compromisso in enumerate(listaCompromissos):
         listaTuplasIndiceCompromisso.append((i, compromisso))
 
-    # Ordena a lista por data
+    # Ordena a lista por data e hora
     listaTuplasOrdenadaData = ordenarPorDataHora(listaTuplasIndiceCompromisso)
 
-    # Ordena a lista por prioridade, mantendo ordem por data nos casos com mesma
+    # Ordena a lista por prioridade, mantendo ordem por data e hora nos casos com mesma
     # prioridade
     listaTuplasOrdenadaPrioridade = ordenarPorPrioridade(listaTuplasOrdenadaData)
 
@@ -260,7 +284,7 @@ def listar() -> bool:
     # Imprime no terminal as atividade ordenadas, utilizando cores para 
     # distinguir prioridades de A a D
     for tupla in listaTuplasOrdenadaPrioridade:
-        string: str = str(tupla[0]) + ' ' + tupla[1].stringTXT()
+        string: str = str(tupla[0]) + ' ' + tupla[1].stringTerminal()
         if tupla[1].getPrioridade() == 'A':
             printCores(string, RED + BOLD)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
         elif tupla[1].getPrioridade() == 'B':
@@ -279,12 +303,19 @@ def ordenarPorDataHora(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, 
         return []
     else:
         pivo:Tuple[int, Compromisso] = itens.pop(0)
-        menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getTimestamp() < pivo[1].getTimestamp()]
-        maiores:List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getTimestamp() >= pivo[1].getTimestamp()]
+        menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getDatetime() < pivo[1].getDatetime()]
+        maiores:List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getDatetime() >= pivo[1].getDatetime()]
     return ordenarPorDataHora(menores) + [pivo] + ordenarPorDataHora(maiores)
 
-def ordenarPorPrioridade(itens: List[Compromisso]):
-    return sorted(itens, key=lambda x: x[1].getPrioridadeOrdenacao())
+def ordenarPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
+    if itens == []:
+        return []
+    else:
+        pivo:Tuple[int, Compromisso] = itens.pop(0)
+        menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getPrioridadeOrdenacao() < pivo[1].getPrioridadeOrdenacao()]
+        maiores: List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getPrioridadeOrdenacao() >= pivo[1].getPrioridadeOrdenacao()]
+
+    return ordenarPorPrioridade(menores) + [pivo] + ordenarPorPrioridade(maiores)
 
 def printCores(texto, cor):
     '''
