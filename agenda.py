@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
@@ -274,8 +274,14 @@ def listar() -> bool:
 
     return True
 
-def ordenarPorDataHora(itens: List[Compromisso]):
-    return sorted(itens, key=lambda x: x[1].getTimestamp())
+def ordenarPorDataHora(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
+    if itens == []:
+        return []
+    else:
+        pivo:Tuple[int, Compromisso] = itens.pop(0)
+        menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getTimestamp() < pivo[1].getTimestamp()]
+        maiores:List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getTimestamp() >= pivo[1].getTimestamp()]
+    return ordenarPorDataHora(menores) + [pivo] + ordenarPorDataHora(maiores)
 
 def ordenarPorPrioridade(itens: List[Compromisso]):
     return sorted(itens, key=lambda x: x[1].getPrioridadeOrdenacao())
