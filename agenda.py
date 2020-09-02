@@ -427,71 +427,78 @@ def soLetras(palavra):
     return True
 
 def fazer(num: int):
-    linhas = []
+    linhas:List[str] = []
+
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
     try:
-        arquivo = open(TODO_FILE, 'r')
-        for linha in arquivo:
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
             linhas.append(linha)
     except IOError as err:
         print("Não foi possível ler para o arquivo " + TODO_FILE)
         print(err)
         return False
     finally:
-        arquivo.close()
+        arquivoTODO.close()
 
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
+    if num >= len(linhas):
+        print('Não há atividade para o indice selecionado')
+        return False
     atividadeConcluida: str = linhas.pop(num)
 
+    # Abre como escrita o arquivo done para salvar a atividade concluída
     try:
-        arquivo = open(ARCHIVE_FILE, 'a')
-        arquivo.write(atividadeConcluida + "\n")
-    except IOError as err:
-        print("Não foi possível escrever para o arquivo " + ARCHIVE_FILE)
-        print(err)
-        return False
-    finally:
-        arquivo.close()
+        arquivoDONE = open(ARCHIVE_FILE, 'a')
+        arquivoTODO = open(TODO_FILE, 'w')
 
-    try:
-        arquivo = open(TODO_FILE, 'w')
+        arquivoDONE.write(atividadeConcluida + "\n")
         for linha in linhas:
-            arquivo.write(linha)
+            arquivoTODO.write(linha)
+
     except IOError as err:
-        print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+        print("Não foi possível escrever para os arquivos " + ARCHIVE_FILE + ' e ' + TODO_FILE)
         print(err)
         return False
     finally:
-        arquivo.close()
+        arquivoDONE.close()
+        arquivoTODO.close()
 
     return True
 
-def remover(num: int):
+def remover(num: int) -> bool:
+
+    linhas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
     try:
-        arquivo = open(TODO_FILE, 'r')
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
     except IOError as err:
         print("Não foi possível ler para o arquivo " + TODO_FILE)
         print(err)
         return False
+    finally:
+        arquivoTODO.close()
 
-    linhas = []
-    for linha in arquivo:
-        linhas.append(linha)
-
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
     if num >= len(linhas):
         print('Não há atividade para o indice selecionado')
         return False
+    #remove linha selecionada pelo usuário
     linhas.pop(num)
 
-    arquivo.close()
-
+    #reabertura do arquivo para reescrevê-lo sem a linha indesejada
     try:
-        arquivo = open(TODO_FILE, 'w')
+        arquivoTODO = open(TODO_FILE, 'w')
+        for linha in linhas:
+            arquivoTODO.write(linha)
     except IOError as err:
         print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
         print(err)
         return False
-
-    for linha in linhas:
-        arquivo.write(linha)
+    finally:
+        arquivoTODO.close()
 
     return True
 
@@ -601,17 +608,15 @@ def processarComandos(comandos):
         elif comandos[1] == LISTAR:
             listar()
         elif comandos[1] == REMOVER:
-            remover(int(comandos[2]))
-            return
+            if remover(int(comandos[2])):
+                print("Atividade removida com sucesso")
         elif comandos[1] == FAZER:
-            fazer(int(comandos[2]))
-            return
+            if fazer(int(comandos[2])):
+                print ("Atividade marcada como concluída com sucesso")
         elif comandos[1] == PRIORIZAR:
             priorizar(int(comandos[2]), comandos[3])
-            return
         elif comandos[1] == DESENHAR:
             desenhar(int(comandos[2]))
-            return
         else:
             print("Comando inválido.")
     else:
