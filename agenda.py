@@ -1,8 +1,9 @@
 import sys
 import time
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from typing import List, Tuple
 
 TODO_FILE = 'todo.txt'
@@ -137,75 +138,6 @@ class Compromisso:
 
         return texto
 
-def organizar(linhas: List[str]) -> List[Compromisso]:
-    '''
-    Dada uma lista de linhas de texto, 
-    devove uma lista de objetos do tipo Compromisso
-
-    É importante lembrar que linhas do arquivo todo.txt devem estar organizadas 
-    de acordo com o seguinte formato:
-
-    DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
-
-    Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora 
-    do formato, por exemplo, data que não tem todos os componentes ou prioridade
-    com mais de um caractere (além dos parênteses), tudo que vier depois será 
-    considerado parte da descrição.
-    '''
-    compromissos: List[Compromisso] = []
-
-    for l in linhas:
-        data:str = ''
-        hora:str = ''
-        prioridade:str = ''
-        descricao:str = ''
-        contexto:str = ''
-        projeto:str = ''
-
-        l = l.strip()  # remove espaços em branco e quebras de linha
-        tokens:List[str] = l.split()  # quebra o string em palavras
-
-        # Checa os primeiros tokens por data, hora e prioridade
-        if len(tokens) and dataValida(tokens[0]):
-            data = tokens.pop(0)
-        if len(tokens) and horaValida(tokens[0]):
-            hora = tokens.pop(0)
-        if len(tokens) and prioridadeValida(tokens[0]):
-            prioridade = tokens.pop(0)
-        
-        # Checa os ultimos tokens por projeto e contexto
-        if len(tokens) and projetoValido(tokens[-1]):
-            projeto = tokens.pop(-1)
-        if len(tokens) and contextoValido(tokens[-1]):
-            contexto = tokens.pop(-1)
-        
-        # A logica utilizada acima permite que o usuario use formatos na
-        # descrição sem que sejam confundidos com os itens opcionais 
-
-        # Reverte uma lista de tokens para uma string separada por espaços
-        descricao = reverterSplit(tokens)
-
-        # A linha abaixo inclui em compromissos um objeto contendo as 
-        # informações relativas aos compromissos nas várias linhas do arquivo.
-        compromissos.append(Compromisso(descricao=descricao,
-                            prioridade=prioridade, data=data, hora=hora,
-                            contexto=contexto, projeto=projeto))
-
-    return compromissos
-
-def reverterSplit(tokens: List[str]) -> str:
-    '''
-    Junta uma lista de palavras em uma unica linha, separada por espaços
-    '''
-    string: str = ''
-    # Checa primeiro se a lista de tokens não esta vazia
-    if len(tokens):
-        string += tokens.pop(0)
-        while len(tokens):
-            string += " " + tokens.pop(0)
-
-    return string
-
 def adicionar(novoCompromisso: Compromisso) -> bool:
     '''
     Adiciona um compromisso aa agenda. Um compromisso tem no minimo
@@ -296,6 +228,262 @@ def listar() -> bool:
             print(string)
 
     return True
+
+def remover(num: int) -> bool:
+
+    linhas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
+    try:
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
+    except IOError as err:
+        print("Não foi possível ler para o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
+    if num >= len(linhas):
+        print('Não há atividade para o indice selecionado')
+        return False
+    #remove linha selecionada pelo usuário
+    linhas.pop(num)
+
+    #reabertura do arquivo para reescrevê-lo sem a linha indesejada
+    try:
+        arquivoTODO = open(TODO_FILE, 'w')
+        for linha in linhas:
+            arquivoTODO.write(linha)
+    except IOError as err:
+        print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    return True
+
+def fazer(num: int) -> bool:
+    linhas:List[str] = []
+
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
+    try:
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
+    except IOError as err:
+        print("Não foi possível ler para o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
+    if num >= len(linhas):
+        print('Não há atividade para o indice selecionado')
+        return False
+    atividadeConcluida: str = linhas.pop(num)
+
+    # Abre como escrita o arquivo done para salvar a atividade concluída
+    try:
+        arquivoDONE = open(ARCHIVE_FILE, 'a')
+        arquivoTODO = open(TODO_FILE, 'w')
+
+        arquivoDONE.write(atividadeConcluida + "\n")
+        for linha in linhas:
+            arquivoTODO.write(linha)
+
+    except IOError as err:
+        print("Não foi possível escrever para os arquivos " + ARCHIVE_FILE + ' e ' + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoDONE.close()
+        arquivoTODO.close()
+
+    return True
+
+def priorizar(num: int, prioridade: str) -> bool:
+    '''
+    prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
+    num é o número da atividade cuja prioridade se planeja modificar, conforme
+    exibido pelo comando 'l'. 
+    '''
+    linhas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
+    try:
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
+    except IOError as err:
+        print("Não foi possível ler para o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
+    if num >= len(linhas):
+        print('Não há atividade para o indice selecionado')
+        return False
+
+    # Transforma as linhas de string em uma lista de objetos "Compromisso"
+    listaCompromissos:List[Compromisso] = organizar(linhas)
+
+    # Verifica se usuario digitou uma prioridade no formato valido
+    prioridade = '(' + prioridade.upper() + ')'
+    if not prioridadeValida(prioridade):
+        print("Fomato da prioridade fornecida não é valida")
+        print("Forneça uma prioridade entre 'A'e 'Z'")
+        return False
+
+    # Adiciona ao compromisso selecionado, a prioridade indicada
+    listaCompromissos[num].adicionarPrioridade(prioridade)
+
+    #reabertura do arquivo para reescrevê-lo com a prioridade atualizada
+    try:
+        arquivoTODO = open(TODO_FILE, 'w')
+        for compromisso in listaCompromissos:
+            arquivoTODO.write(compromisso.stringTXT() + '\n')
+    except IOError as err:
+        print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoTODO.close()
+
+    return True
+
+def desenhar(nDias: int) -> bool:
+    linhasCompletadas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhasCompletadas"
+    try:
+        arquivoDONE = open(ARCHIVE_FILE, 'r')
+        for linha in arquivoDONE:
+            if linha != '\n':
+                linhasCompletadas.append(linha)
+    except IOError as err:
+        print("Não foi possível ler o arquivo " + TODO_FILE)
+        print(err)
+        return False
+    finally:
+        arquivoDONE.close()
+
+    # Transforma as linhas de string em uma lista de objetos "Compromisso"
+    atividadesCompletadas:List[Compromisso] = organizar(linhasCompletadas)
+
+    # data de hoje
+    hoje:date = date.today()
+
+    # Cria lista para eixo X do grafico
+    eixoX:List[str] = []
+    for i in range(nDias):
+        delta:timedelta = timedelta(days=i)
+        data:date = hoje - delta
+        eixoX.append(str(data.day) + '/' + str(data.month))
+
+    # Lista para contar quantidade de atividades em cada dia
+    nAtividadeCompletadasDia:list[int] = [0] * nDias
+
+    for atividade in atividadesCompletadas:
+        deltaData:timedelta = hoje - atividade.getDatetime().date()
+        if deltaData.days >= 0 and deltaData.days < nDias:
+            nAtividadeCompletadasDia[deltaData.days] += 1 
+    
+    # Reverte o eixo x e y para o grafico ficar em ordem de linha do tempo
+    eixoX.reverse()
+    nAtividadeCompletadasDia.reverse()
+
+    # Gera o grafico    
+    fig, axs = plt.subplots()
+    # Configura o eixo Y para numeros inteiros
+    axs.yaxis.set_major_locator(MaxNLocator(integer=True))
+    # Cria o grafico do tipo barras
+    axs.bar(eixoX, nAtividadeCompletadasDia)
+    # Gera labels referente ao valor de cada barra e posiciona acima da barra
+    rects = axs.patches
+    for rect, label in zip(rects, nAtividadeCompletadasDia):
+        height = rect.get_height()
+        axs.text(rect.get_x() + rect.get_width() / 2, height, label,
+                ha='center', va='bottom')
+    # Legendas
+    plt.title('Acompanhamento de Atividades')
+    plt.xlabel('Dia')
+    plt.ylabel('Atividades Realizadas Por Dia')
+    plt.show()
+
+    return True
+
+def organizar(linhas: List[str]) -> List[Compromisso]:
+    '''
+    Dada uma lista de linhas de texto, 
+    devove uma lista de objetos do tipo Compromisso
+
+    É importante lembrar que linhas do arquivo todo.txt devem estar organizadas 
+    de acordo com o seguinte formato:
+
+    DDMMAAAA HHMM (P) DESC @CONTEXT +PROJ
+
+    Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora 
+    do formato, por exemplo, data que não tem todos os componentes ou prioridade
+    com mais de um caractere (além dos parênteses), tudo que vier depois será 
+    considerado parte da descrição.
+    '''
+    compromissos: List[Compromisso] = []
+
+    for l in linhas:
+        data:str = ''
+        hora:str = ''
+        prioridade:str = ''
+        descricao:str = ''
+        contexto:str = ''
+        projeto:str = ''
+
+        l = l.strip()  # remove espaços em branco e quebras de linha
+        tokens:List[str] = l.split()  # quebra o string em palavras
+
+        # Checa os primeiros tokens por data, hora e prioridade
+        if len(tokens) and dataValida(tokens[0]):
+            data = tokens.pop(0)
+        if len(tokens) and horaValida(tokens[0]):
+            hora = tokens.pop(0)
+        if len(tokens) and prioridadeValida(tokens[0]):
+            prioridade = tokens.pop(0)
+        
+        # Checa os ultimos tokens por projeto e contexto
+        if len(tokens) and projetoValido(tokens[-1]):
+            projeto = tokens.pop(-1)
+        if len(tokens) and contextoValido(tokens[-1]):
+            contexto = tokens.pop(-1)
+        
+        # A logica utilizada acima permite que o usuario use formatos na
+        # descrição sem que sejam confundidos com os itens opcionais 
+
+        # Reverte uma lista de tokens para uma string separada por espaços
+        descricao = reverterSplit(tokens)
+
+        # A linha abaixo inclui em compromissos um objeto contendo as 
+        # informações relativas aos compromissos nas várias linhas do arquivo.
+        compromissos.append(Compromisso(descricao=descricao,
+                            prioridade=prioridade, data=data, hora=hora,
+                            contexto=contexto, projeto=projeto))
+
+    return compromissos
+
+def reverterSplit(tokens: List[str]) -> str:
+    '''
+    Junta uma lista de palavras em uma unica linha, separada por espaços
+    '''
+    string: str = ''
+    # Checa primeiro se a lista de tokens não esta vazia
+    if len(tokens):
+        string += tokens.pop(0)
+        while len(tokens):
+            string += " " + tokens.pop(0)
+
+    return string
 
 def ordenarTuplasPorDataHora(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
     if itens == []:
@@ -425,187 +613,6 @@ def soLetras(palavra):
 
     return True
 
-def fazer(num: int):
-    linhas:List[str] = []
-
-    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
-    try:
-        arquivoTODO = open(TODO_FILE, 'r')
-        for linha in arquivoTODO:
-            linhas.append(linha)
-    except IOError as err:
-        print("Não foi possível ler para o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoTODO.close()
-
-    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
-    if num >= len(linhas):
-        print('Não há atividade para o indice selecionado')
-        return False
-    atividadeConcluida: str = linhas.pop(num)
-
-    # Abre como escrita o arquivo done para salvar a atividade concluída
-    try:
-        arquivoDONE = open(ARCHIVE_FILE, 'a')
-        arquivoTODO = open(TODO_FILE, 'w')
-
-        arquivoDONE.write(atividadeConcluida + "\n")
-        for linha in linhas:
-            arquivoTODO.write(linha)
-
-    except IOError as err:
-        print("Não foi possível escrever para os arquivos " + ARCHIVE_FILE + ' e ' + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoDONE.close()
-        arquivoTODO.close()
-
-    return True
-
-def remover(num: int) -> bool:
-
-    linhas:List[str] = []
-    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
-    try:
-        arquivoTODO = open(TODO_FILE, 'r')
-        for linha in arquivoTODO:
-            linhas.append(linha)
-    except IOError as err:
-        print("Não foi possível ler para o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoTODO.close()
-
-    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
-    if num >= len(linhas):
-        print('Não há atividade para o indice selecionado')
-        return False
-    #remove linha selecionada pelo usuário
-    linhas.pop(num)
-
-    #reabertura do arquivo para reescrevê-lo sem a linha indesejada
-    try:
-        arquivoTODO = open(TODO_FILE, 'w')
-        for linha in linhas:
-            arquivoTODO.write(linha)
-    except IOError as err:
-        print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoTODO.close()
-
-    return True
-
-def priorizar(num: int, prioridade: str) -> True:
-    '''
-    prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
-    num é o número da atividade cuja prioridade se planeja modificar, conforme
-    exibido pelo comando 'l'. 
-    '''
-    linhas:List[str] = []
-    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
-    try:
-        arquivoTODO = open(TODO_FILE, 'r')
-        for linha in arquivoTODO:
-            linhas.append(linha)
-    except IOError as err:
-        print("Não foi possível ler para o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoTODO.close()
-
-    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
-    if num >= len(linhas):
-        print('Não há atividade para o indice selecionado')
-        return False
-
-    # Transforma as linhas de string em uma lista de objetos "Compromisso"
-    listaCompromissos:List[Compromisso] = organizar(linhas)
-
-    # Verifica se usuario digitou uma prioridade no formato valido
-    prioridade = '(' + prioridade.upper() + ')'
-    if not prioridadeValida(prioridade):
-        print("Fomato da prioridade fornecida não é valida")
-        print("Forneça uma prioridade entre 'A'e 'Z'")
-        return False
-
-    # Adiciona ao compromisso selecionado, a prioridade indicada
-    listaCompromissos[num].adicionarPrioridade(prioridade)
-
-    #reabertura do arquivo para reescrevê-lo com a prioridade atualizada
-    try:
-        arquivoTODO = open(TODO_FILE, 'w')
-        for compromisso in listaCompromissos:
-            arquivoTODO.write(compromisso.stringTXT() + '\n')
-    except IOError as err:
-        print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoTODO.close()
-
-    return True
-
-def desenhar(dias: int):
-    linhasCompletadas:List[str] = []
-    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhasCompletadas"
-    try:
-        arquivoDONE = open(ARCHIVE_FILE, 'r')
-        for linha in arquivoDONE:
-            if linha != '\n':
-                linhasCompletadas.append(linha)
-    except IOError as err:
-        print("Não foi possível ler o arquivo " + TODO_FILE)
-        print(err)
-        return False
-    finally:
-        arquivoDONE.close()
-
-    # Transforma as linhas de string em uma lista de objetos "Compromisso"
-    atividadesCompletadas:List[Compromisso] = organizar(linhasCompletadas)
-
-
-    dataUltimaAtividadeCompletada = (0, 0, 0)
-    atividadesCompletadasPorDia = [0] * dias  # [0, 0, 0, 0, 0]
-    for atividade in atividadesCompletadas:
-        if atividade.data == '':
-            break
-        if dataUltimaAtividadeCompletada == (0, 0, 0):
-            dataUltimaAtividadeCompletada = atividade.getDataOrdenacao()
-            atividadesCompletadasPorDia[0] += 1
-        else:
-            dataAtividade = atividade.getDataOrdenacao()
-            x = dataUltimaAtividadeCompletada[2] - dataAtividade[
-                2]  # TODO SÓ CONSIDERA DIFERENCA DA DATA DO DIA, NÃO FUNCIONA PARA DIAS EM MESES DIFERENTE
-            if x > dias:
-                break
-            atividadesCompletadasPorDia[x] += 1
-
-    atividadesCompletadasPorDia.reverse()
-
-    x = range(dias)  # [0, 1, 2 , 3, 4]
-    # TODO CONFIGURAR O GRAFICO
-    #plt.plot(x, atividadesCompletadasPorDia)
-    #plt.title('ATIVIDADES REALIZADAS')
-
-    fig, axs = plt.subplots()
-    axs.bar(x, atividadesCompletadasPorDia)
-    #axs[1].scatter(names, values)
-    #axs[2].plot(names, values)
-    #fig.suptitle('FELIPE ROCKS')
-    plt.title('ATIVIDADES REALIZADAS')
-    plt.xlabel('dias')
-    plt.ylabel('quantidade de atividades realizadas')
-    plt.show()
-
-    return
-
 def processarComandos(comandos):
     '''
     Esta função processa os comandos e informações passados através da linha de comando e identifica
@@ -632,7 +639,7 @@ def processarComandos(comandos):
                 print("Uso invalido do comando REMOVER")
                 print("Uso: python agenda.py r (indice da atividade)")
             elif not soDigitos(comandos[2]):
-                print("Indice da atividade precisa ser um valor numerico")
+                print("Indice da atividade precisa ser um valor numerico positivo")
             elif remover(int(comandos[2])):
                 print("Atividade removida com sucesso")
         elif comandos[1] == FAZER:
@@ -643,7 +650,7 @@ def processarComandos(comandos):
                 print("Uso invalido do comando FAZER")
                 print("Uso: python agenda.py f (indice da atividade)")
             elif not soDigitos(comandos[2]):
-                print("Indice da atividade precisa ser um valor numerico")
+                print("Indice da atividade precisa ser um valor numerico positivo")
             elif fazer(int(comandos[2])):
                 print ("Atividade marcada como concluída com sucesso")
         elif comandos[1] == PRIORIZAR:
@@ -655,7 +662,7 @@ def processarComandos(comandos):
                 print("Uso invalido do comando PRIORIZAR")
                 print("Uso: python agenda.py p (indice da atividade) (prioridade)")
             elif not soDigitos(comandos[2]):
-                print("Indice da atividade precisa ser um valor numerico")
+                print("Indice da atividade precisa ser um valor numerico positivo")
             elif priorizar(int(comandos[2]), comandos[3]):
                 print("Prioridade atualizada com sucesso")
         elif comandos[1] == DESENHAR:
@@ -665,7 +672,7 @@ def processarComandos(comandos):
                 print("Uso invalido do comando DESENHAR")
                 print("Uso: python agenda.py g (dias)")
             elif not soDigitos(comandos[2]):
-                print("Numero de dias precisa ser um valor numerico")
+                print("Numero de dias precisa ser um valor numerico positivo")
             else:
                 desenhar(int(comandos[2]))
         else:
