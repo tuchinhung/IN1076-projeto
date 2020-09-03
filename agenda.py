@@ -1,22 +1,14 @@
 import sys
 import time
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 
+from termcolor import cprint
+from matplotlib.ticker import MaxNLocator
 from datetime import datetime, date, timedelta
 from typing import List, Tuple
 
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
-
-RED = "\033[1;31m"
-BLUE = "\033[1;34m"
-CYAN = "\033[1;36m"
-GREEN = "\033[0;32m"
-RESET = "\033[0;0m"
-BOLD = "\033[;1m"
-REVERSE = "\033[;7m"
-YELLOW = "\033[0;33m"
 
 ADICIONAR = 'a'
 REMOVER = 'r'
@@ -217,13 +209,13 @@ def listar() -> bool:
     for tupla in listaTuplasOrdenadaPrioridade:
         string: str = str(tupla[0]) + ' ' + tupla[1].stringTerminal()
         if tupla[1].getPrioridade() == 'A':
-            printCores(string, RED + BOLD)  # TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+            cprint(text=string, color='red', attrs=['bold'])
         elif tupla[1].getPrioridade() == 'B':
-            printCores(string, YELLOW)
+            cprint(text=string, color='yellow')
         elif tupla[1].getPrioridade() == 'C':
-            printCores(string, GREEN)
+            cprint(text=string, color='green')
         elif tupla[1].getPrioridade() == 'D':
-            printCores(string, BLUE)
+            cprint(text=string, color='blue')
         else:
             print(string)
 
@@ -471,15 +463,6 @@ def organizar(linhas: List[str]) -> List[Compromisso]:
                             contexto=contexto, projeto=projeto))
 
     return compromissos
-
-def printCores(texto: str, cor: str) -> None:
-    '''
-    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
-
-    printCores('Oi mundo!', RED)
-    printCores('Texto amarelo e negrito', YELLOW + BOLD)
-    '''
-    print(cor + texto + RESET)
 
 def prioridadeValida(pri: str) -> bool:
     '''Valida a prioridade.'''
