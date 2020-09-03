@@ -472,6 +472,115 @@ def organizar(linhas: List[str]) -> List[Compromisso]:
 
     return compromissos
 
+def printCores(texto: str, cor: str) -> None:
+    '''
+    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
+
+    printCores('Oi mundo!', RED)
+    printCores('Texto amarelo e negrito', YELLOW + BOLD)
+    '''
+    print(cor + texto + RESET)
+
+def prioridadeValida(pri: str) -> bool:
+    '''Valida a prioridade.'''
+    if len(pri) == 3:
+        if pri[0] == "(" and pri[2] == ")":
+            if soLetras(pri[1]):
+                return True
+
+    return False
+
+def horaValida(horaMin: str) -> bool:
+    '''
+    Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
+    de dois blocos de 12 (AM e PM), como nos EUA.
+    '''
+    if len(horaMin) != 4 or not soDigitos(horaMin):
+        return False
+    else:
+        horas: int = int(horaMin[0:2])
+        minutos: int = int(horaMin[2:4])
+
+        # Hora precisa ser entre 00 e 23
+        if horas < 0 or horas > 23:
+            return False
+
+        # Minuto precisa ser entre 00 e 59
+        if minutos < 0 or minutos > 59:
+            return False
+
+        return True
+
+def dataValida(data: str) -> bool:
+    '''
+    Valida datas. Verificar inclusive se não estamos tentando
+    colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
+    de que um ano é bissexto. 
+    '''
+    if len(data) != 8 or not soDigitos(data):
+        return False
+    else:
+        dia: int = int(data[0:2])
+        mes: int = int(data[2:4])
+
+        # Caso mês de 31 dias
+        if mes in [1, 3, 5, 7, 8, 10, 12]:
+            nDiasMes: int = 31
+        # Caso mês de 30 dias
+        elif mes in [4, 6, 9, 11]:
+            nDiasMes: int = 30
+        # Caso fevereiro
+        elif mes == 2:
+            nDiasMes: int = 29
+        # Nenhum dos casos = mes invalido
+        else:
+            return False
+
+        # Dia precisa ser entre 1 e numero de dias no mês
+        if dia < 0 or dia > nDiasMes:
+            return False
+        else:
+            return True
+
+def projetoValido(proj: str) -> bool:
+    '''
+    Valida que o string do projeto está no formato correto.
+    '''
+    if len(proj) >= 2 and proj[0] == '+':
+        return True
+
+    return False
+
+def contextoValido(cont: str) -> bool:
+    '''Valida que o string do contexto está no formato correto.'''
+    if len(cont) >= 2 and cont[0] == '@':
+        return True
+
+    return False
+
+def soDigitos(numero: str) -> bool:
+    '''
+    Valida que a data ou a hora contém apenas dígitos, desprezando espaços
+    extras no início e no fim.
+    '''
+    if type(numero) != str:
+        return False
+    for x in numero:
+        if x < '0' or x > '9':
+            return False
+    return True
+
+def soLetras(palavra: str) -> bool:
+    if type(palavra) != str:
+        return False
+    palavraMinusculo: str = palavra.lower()
+
+    for caractere in palavraMinusculo:
+        if caractere < 'a' or caractere > 'z':
+            return False
+
+    return True
+
 def reverterSplit(tokens: List[str]) -> str:
     '''
     Junta uma lista de palavras em uma unica linha, separada por espaços
@@ -504,116 +613,7 @@ def ordenarTuplasPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tup
 
     return ordenarTuplasPorPrioridade(menores) + [pivo] + ordenarTuplasPorPrioridade(maiores)
 
-def printCores(texto, cor):
-    '''
-    Imprime texto com cores. Por exemplo, para imprimir "Oi mundo!" em vermelho, basta usar
-
-    printCores('Oi mundo!', RED)
-    printCores('Texto amarelo e negrito', YELLOW + BOLD)
-    '''
-    print(cor + texto + RESET)
-
-def prioridadeValida(pri: str):
-    '''Valida a prioridade.'''
-    if len(pri) == 3:
-        if pri[0] == "(" and pri[2] == ")":
-            if soLetras(pri[1]):
-                return True
-
-    return False
-
-def horaValida(horaMin: str):
-    '''
-    Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
-    de dois blocos de 12 (AM e PM), como nos EUA.
-    '''
-    if len(horaMin) != 4 or not soDigitos(horaMin):
-        return False
-    else:
-        horas: int = int(horaMin[0:2])
-        minutos: int = int(horaMin[2:4])
-
-        # Hora precisa ser entre 00 e 23
-        if horas < 0 or horas > 23:
-            return False
-
-        # Minuto precisa ser entre 00 e 59
-        if minutos < 0 or minutos > 59:
-            return False
-
-        return True
-
-def dataValida(data: str):
-    '''
-    Valida datas. Verificar inclusive se não estamos tentando
-    colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
-    de que um ano é bissexto. 
-    '''
-    if len(data) != 8 or not soDigitos(data):
-        return False
-    else:
-        dia: int = int(data[0:2])
-        mes: int = int(data[2:4])
-
-        # Caso mês de 31 dias
-        if mes in [1, 3, 5, 7, 8, 10, 12]:
-            nDiasMes: int = 31
-        # Caso mês de 30 dias
-        elif mes in [4, 6, 9, 11]:
-            nDiasMes: int = 30
-        # Caso fevereiro
-        elif mes == 2:
-            nDiasMes: int = 29
-        # Nenhum dos casos = mes invalido
-        else:
-            return False
-
-        # Dia precisa ser entre 1 e numero de dias no mês
-        if dia < 0 or dia > nDiasMes:
-            return False
-        else:
-            return True
-
-def projetoValido(proj: str):
-    '''
-    Valida que o string do projeto está no formato correto.
-    '''
-    if len(proj) >= 2 and proj[0] == '+':
-        return True
-
-    return False
-
-def contextoValido(cont: str):
-    '''Valida que o string do contexto está no formato correto.'''
-    if len(cont) >= 2 and cont[0] == '@':
-        return True
-
-    return False
-
-def soDigitos(numero: str):
-    '''
-    Valida que a data ou a hora contém apenas dígitos, desprezando espaços
-    extras no início e no fim.
-    '''
-    if type(numero) != str:
-        return False
-    for x in numero:
-        if x < '0' or x > '9':
-            return False
-    return True
-
-def soLetras(palavra):
-    if type(palavra) != str:
-        return False
-    palavraMinusculo: str = palavra.lower()
-
-    for caractere in palavraMinusculo:
-        if caractere < 'a' or caractere > 'z':
-            return False
-
-    return True
-
-def processarComandos(comandos):
+def processarComandos(comandos: List[str]) -> None:
     '''
     Esta função processa os comandos e informações passados através da linha de comando e identifica
     que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
