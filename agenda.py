@@ -137,7 +137,6 @@ class Compromisso:
 
         return texto
 
-
 def organizar(linhas: List[str]) -> List[Compromisso]:
     '''
     Dada uma lista de linhas de texto, 
@@ -274,11 +273,11 @@ def listar() -> bool:
         listaTuplasIndiceCompromisso.append((i, compromisso))
 
     # Ordena a lista por data e hora
-    listaTuplasOrdenadaData = ordenarPorDataHora(listaTuplasIndiceCompromisso)
+    listaTuplasOrdenadaData = ordenarTuplasPorDataHora(listaTuplasIndiceCompromisso)
 
     # Ordena a lista por prioridade, mantendo ordem por data e hora nos casos com mesma
     # prioridade
-    listaTuplasOrdenadaPrioridade = ordenarPorPrioridade(listaTuplasOrdenadaData)
+    listaTuplasOrdenadaPrioridade = ordenarTuplasPorPrioridade(listaTuplasOrdenadaData)
 
 
     # Imprime no terminal as atividade ordenadas, utilizando cores para 
@@ -298,16 +297,16 @@ def listar() -> bool:
 
     return True
 
-def ordenarPorDataHora(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
+def ordenarTuplasPorDataHora(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
     if itens == []:
         return []
     else:
         pivo:Tuple[int, Compromisso] = itens.pop(0)
         menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getDatetime() < pivo[1].getDatetime()]
         maiores:List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getDatetime() >= pivo[1].getDatetime()]
-    return ordenarPorDataHora(menores) + [pivo] + ordenarPorDataHora(maiores)
+    return ordenarTuplasPorDataHora(menores) + [pivo] + ordenarTuplasPorDataHora(maiores)
 
-def ordenarPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
+def ordenarTuplasPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int, Compromisso]]:
     if itens == []:
         return []
     else:
@@ -315,7 +314,7 @@ def ordenarPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tuple[int
         menores:List[Tuple[int, Compromisso]] = [x for x in itens if x[1].getPrioridadeOrdenacao() < pivo[1].getPrioridadeOrdenacao()]
         maiores: List[Tuple[int, Compromisso]] = [y for y in itens if y[1].getPrioridadeOrdenacao() >= pivo[1].getPrioridadeOrdenacao()]
 
-    return ordenarPorPrioridade(menores) + [pivo] + ordenarPorPrioridade(maiores)
+    return ordenarTuplasPorPrioridade(menores) + [pivo] + ordenarTuplasPorPrioridade(maiores)
 
 def printCores(texto, cor):
     '''
@@ -403,7 +402,7 @@ def contextoValido(cont: str):
 
     return False
 
-def soDigitos(numero):
+def soDigitos(numero: str):
     '''
     Valida que a data ou a hora contém apenas dígitos, desprezando espaços
     extras no início e no fim.
@@ -502,46 +501,63 @@ def remover(num: int) -> bool:
 
     return True
 
-def priorizar(num: int, prioridade: str):
+def priorizar(num: int, prioridade: str) -> True:
     '''
     prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
     num é o número da atividade cuja prioridade se planeja modificar, conforme
     exibido pelo comando 'l'. 
     '''
+    linhas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhas"
     try:
-        arquivo = open(TODO_FILE, 'r')
+        arquivoTODO = open(TODO_FILE, 'r')
+        for linha in arquivoTODO:
+            linhas.append(linha)
     except IOError as err:
         print("Não foi possível ler para o arquivo " + TODO_FILE)
         print(err)
         return False
+    finally:
+        arquivoTODO.close()
 
-    linhas = []
-    for linha in arquivo:
-        linhas.append(linha)
-    arquivo.close()
-
+    # verificação se o usuário selecionou uma linha válida, a partir do seu índice
     if num >= len(linhas):
         print('Não há atividade para o indice selecionado')
         return False
 
-    listaCompromissos = organizar(linhas)
-    listaCompromissos[num].adicionarPrioridade('(' + prioridade + ')')
+    # Transforma as linhas de string em uma lista de objetos "Compromisso"
+    listaCompromissos:List[Compromisso] = organizar(linhas)
 
+    # Verifica se usuario digitou uma prioridade no formato valido
+    prioridade = '(' + prioridade.upper() + ')'
+    if not prioridadeValida(prioridade):
+        print("Fomato da prioridade fornecida não é valida")
+        print("Forneça uma prioridade entre 'A'e 'Z'")
+        return False
+
+    # Adiciona ao compromisso selecionado, a prioridade indicada
+    listaCompromissos[num].adicionarPrioridade(prioridade)
+
+    #reabertura do arquivo para reescrevê-lo com a prioridade atualizada
     try:
-        arquivo = open(TODO_FILE, 'w')
+        arquivoTODO = open(TODO_FILE, 'w')
+        for compromisso in listaCompromissos:
+            arquivoTODO.write(compromisso.stringTXT() + '\n')
     except IOError as err:
         print("Não foi possível abrir para escrita o arquivo " + TODO_FILE)
         print(err)
         return False
+    finally:
+        arquivoTODO.close()
 
-    for compromisso in listaCompromissos:
-        arquivo.write(compromisso.stringTXT() + '\n')
+    return True
 
 def desenhar(dias: int):
-    linhasCompletadas = []
+    linhasCompletadas:List[str] = []
+    # ler linhas do arquivo txt e adiciona suas linhas em uma lista "linhasCompletadas"
     try:
-        arquivo = open(ARCHIVE_FILE, 'r')
-        for linha in arquivo:
+        arquivoDONE = open(ARCHIVE_FILE, 'r')
+        for linha in arquivoDONE:
             if linha != '\n':
                 linhasCompletadas.append(linha)
     except IOError as err:
@@ -549,10 +565,11 @@ def desenhar(dias: int):
         print(err)
         return False
     finally:
-        arquivo.close()
+        arquivoDONE.close()
 
-    atividadesCompletadas = organizar(linhasCompletadas)
-    atividadesCompletadas.sort(key=lambda x: x.getDataOrdenacao(), reverse=True)
+    # Transforma as linhas de string em uma lista de objetos "Compromisso"
+    atividadesCompletadas:List[Compromisso] = organizar(linhasCompletadas)
+
 
     dataUltimaAtividadeCompletada = (0, 0, 0)
     atividadesCompletadasPorDia = [0] * dias  # [0, 0, 0, 0, 0]
@@ -608,15 +625,49 @@ def processarComandos(comandos):
         elif comandos[1] == LISTAR:
             listar()
         elif comandos[1] == REMOVER:
-            if remover(int(comandos[2])):
+            # Verifica se usuario entrou a quantidade de argumentos correto
+            # Verifica se usuario digitou indice numerico
+            # A função remover verifica se indice digitado corresponde a uma linha
+            if len(comandos) != 3:
+                print("Uso invalido do comando REMOVER")
+                print("Uso: python agenda.py r (indice da atividade)")
+            elif not soDigitos(comandos[2]):
+                print("Indice da atividade precisa ser um valor numerico")
+            elif remover(int(comandos[2])):
                 print("Atividade removida com sucesso")
         elif comandos[1] == FAZER:
-            if fazer(int(comandos[2])):
+            # Verifica se usuario entrou a quantidade de argumentos correto
+            # Verifica se usuario digitou indice numerico
+            # A função fazer verifica se indice digitado corresponde a uma linha
+            if len(comandos) != 3:
+                print("Uso invalido do comando FAZER")
+                print("Uso: python agenda.py f (indice da atividade)")
+            elif not soDigitos(comandos[2]):
+                print("Indice da atividade precisa ser um valor numerico")
+            elif fazer(int(comandos[2])):
                 print ("Atividade marcada como concluída com sucesso")
         elif comandos[1] == PRIORIZAR:
-            priorizar(int(comandos[2]), comandos[3])
+            # Verifica se usuario entrou a quantidade de argumentos correto
+            # Verifica se usuario digitou indice numerico
+            # A função priorizar verifica se indice digitado corresponde a uma linha
+            # e se a prioridade digitada é valida
+            if len(comandos) != 4:
+                print("Uso invalido do comando PRIORIZAR")
+                print("Uso: python agenda.py p (indice da atividade) (prioridade)")
+            elif not soDigitos(comandos[2]):
+                print("Indice da atividade precisa ser um valor numerico")
+            elif priorizar(int(comandos[2]), comandos[3]):
+                print("Prioridade atualizada com sucesso")
         elif comandos[1] == DESENHAR:
-            desenhar(int(comandos[2]))
+            # Verifica se usuario entrou a quantidade de argumentos correto
+            # Verifica se usuario digitou um numero de dias numerico
+            if len(comandos) != 3:
+                print("Uso invalido do comando DESENHAR")
+                print("Uso: python agenda.py g (dias)")
+            elif not soDigitos(comandos[2]):
+                print("Numero de dias precisa ser um valor numerico")
+            else:
+                desenhar(int(comandos[2]))
         else:
             print("Comando inválido.")
     else:
