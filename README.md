@@ -1,10 +1,14 @@
 # Projeto IN1076
+
 Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
+
 ### Alunos:
+
 - Felipe Bezerra Martins (fbm2)
 - Maria Cecilia Cavalcanti Jucá (mccj)
 
 ## Checklist
+
 - [x] Tarefa 0
 - [x] Tarefa 1
 - [x] Tarefa 2
@@ -28,23 +32,69 @@ Projeto da disciplina de Algoritmos 1 do mestrado do CIn UFPE
 - [x] Tarefa 20
 - [x] Tarefa 21
 - [x] Tarefa 22
+- [x] Opcional 0
 
-## Duvidas
+# Apresentação
 
-em especificacao_projeto.pdf:
-- Tarefa 8: Complete a implementação da função organizar(). Como dito antes, essa **função recebe
-uma lista de strings** representando atividades e **devolve uma lista de objetos** com as informações dessas
-atividades organizadas. Para completar essa função, será necessário complementar a implementação
-da classe Compromisso. Note que seus atributos, exceto pela descrição, são opcionais.
+Adicionar atividades à agenda 
+```
+python3 agenda.py
+python3 agenda.py a
+python3 agenda.py a 26102017 Comemorar meu aniversário @Casa
+python3 agenda.py a Estudar programação todos os dias. @UFPE +IN1076
+```
 
-no codigo antes da função organizar:
-- Dadas as linhas de texto obtidas a partir do arquivo texto todo.txt, **devolve
-  uma lista de tuplas** contendo os pedaços de cada linha, conforme o seguinte
-  
-  formato:
-  
-  (descrição, prioridade, (data, hora, contexto, projeto))
+Listar atividades
+```
+python3 agenda.py l
+python3 agenda.py l @Casa
+python3 agenda.py l +Algoritmos1
+python3 agenda.py l (C)
+python3 agenda.py l (G)
+python3 agenda.py l fldajsg
+python3 agenda.py l fldajsg doskao
+```
 
+Mudar prioridade
+```
+python3 agenda p
+python3 agenda p 2 A
+python3 agenda p 2 F
+python3 agenda p 2 AA
+python3 agenda p 2 a
+python3 agenda p A 2
+python3 agenda p 2 A 1
+```
 
-- printCores(string, RED) #TODO botar bold, não estamos conseguindo usar como especificado (RED + BOLD) fica só bold
+Remover Atividaes
+```
+python3 agenda.py r
+python3 agenda.py r 5
+python3 agenda.py r 142
+python3 agenda.py r 0
+python3 agenda.py r -1
+python3 agenda.py r A
+python3 agenda.py r 5 foo
+```
 
+Fazer Atividaes
+```
+python3 agenda.py f
+python3 agenda.py f 5
+python3 agenda.py f 142
+python3 agenda.py f 0
+python3 agenda.py f -1
+python3 agenda.py f A
+python3 agenda.py f 5 foo
+```
+
+Grafico Motivacional
+```
+python3 agenda.py g
+python3 agenda.py g 5
+python3 agenda.py g 142
+python3 agenda.py g 0
+python3 agenda.py f -1
+python3 agenda.py f A
+python3 agenda.py f 5 foo
+```
