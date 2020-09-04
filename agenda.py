@@ -295,14 +295,19 @@ def fazer(num: int) -> bool:
     if num >= len(linhas):
         print('Não há atividade para o indice selecionado')
         return False
-    atividadeConcluida: str = linhas.pop(num)
+
+    linhaAtividade: str = linhas.pop(num)
+    atividadeConcluida: Compromisso = organizar([linhaAtividade])[0]
+
+    hoje:date = date.today()
+    atividadeConcluida.data = hoje.strftime("%d%m%Y")
 
     # Abre como escrita o arquivo done para salvar a atividade concluída
     try:
         arquivoDONE = open(ARCHIVE_FILE, 'a')
         arquivoTODO = open(TODO_FILE, 'w')
 
-        arquivoDONE.write(atividadeConcluida + "\n")
+        arquivoDONE.write(atividadeConcluida.stringTXT() + "\n")
         for linha in linhas:
             arquivoTODO.write(linha)
 
@@ -733,4 +738,3 @@ if __name__ == "__main__":
     '''
 
     processarComandos(sys.argv)
-
