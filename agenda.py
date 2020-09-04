@@ -204,19 +204,20 @@ def listar(filtro:str=None) -> bool:
 
     if filtro != None:
         # Filtra a lista por prioridade
-        if prioridadeValida(filtro):
-            listaTuplasOrdenadaPrioridade = filtrarPrioridade(listaTuplasIndiceCompromisso, filtro)
-            if listaTuplasIndiceCompromisso == []:
+        if prioridadeValida('(' + filtro + ')'):
+            filtro = filtro.upper()
+            listaTuplasOrdenadaPrioridade = filtrarPrioridade(listaTuplasIndiceCompromisso, '(' + filtro + ')')
+            if listaTuplasOrdenadaPrioridade == []:
                 print("Não existem atividades com a prioridade:", filtro)
         # Filtra a lista por contexto
         elif contextoValido(filtro):
             listaTuplasOrdenadaPrioridade = filtrarContexto(listaTuplasIndiceCompromisso, filtro)
-            if listaTuplasIndiceCompromisso == []:
+            if listaTuplasOrdenadaPrioridade == []:
                 print("Não existem atividades com o contexto:", filtro)
         # Filtra a lista por projeto
         elif projetoValido(filtro):
             listaTuplasOrdenadaPrioridade = filtrarProjeto(listaTuplasIndiceCompromisso, filtro)
-            if listaTuplasIndiceCompromisso == []:
+            if listaTuplasOrdenadaPrioridade == []:
                 print("Não existem atividades com o projeto:", filtro)
         # Quando o usuário entra um filtro inválido - fora do formato de prioridade, contexto ou projeto
         else:
@@ -672,7 +673,8 @@ def processarComandos(comandos: List[str]) -> None:
             elif len(comandos) == 2:
                 listar()
             else:
-                print("Uso: python agenda.py l [(prioridade), @Contexto ou +Projeto]")
+                print("Uso invalido do comando LISTAR")
+                print("Uso: python agenda.py l [prioridade, @Contexto ou +Projeto]")
         elif comandos[1] == REMOVER:
             # Verifica se usuario entrou a quantidade de argumentos correto
             # Verifica se usuario digitou indice numerico
@@ -713,8 +715,8 @@ def processarComandos(comandos: List[str]) -> None:
             if len(comandos) != 3:
                 print("Uso invalido do comando DESENHAR")
                 print("Uso: python agenda.py g (dias)")
-            elif not soDigitos(comandos[2]):
-                print("Numero de dias precisa ser um valor numerico positivo")
+            elif not soDigitos(comandos[2]) or int(comandos[2]) == 0:
+                print("Numero de dias precisa ser um valor numerico inteiro maior que zero")
             else:
                 desenhar(int(comandos[2]))
         else:
