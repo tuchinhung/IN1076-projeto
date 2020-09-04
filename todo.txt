@@ -1,29 +1,28 @@
 (B) Finalizar ppt do projeto Minas nas Escolas
-23052020 1930 Jantar de anivers�rio de Painho @Casa
+23052020 1930 Jantar de aniversario de Painho @Casa
 (A) Fazer o projeto da Disciplina de Algoritmos. +IN1076
 (B) Criar planilha para compartilhar com o financeiro para reembolso. +GNED
-(C) Aprender a mexer no github para avan�ar no projeto.
-(A) 220820 Iniciar a transcri��o das entrevistas da Disserta��o +Disserta��o
-22082023 (B) Participar de Oficina de Canais de Tra��o do CESARLabs +GNED
-22082020 Fazer o exerc�cio passado pelo professor Gabriel +Fitness
-(B) Emitir nota fiscal do servi�o prestado no programa Porto Digital +MTM
-31082020 1630 Realizar a oficina "Como arrasar fazendo apresenta��es" do Minas nas Escolas +MTM
-17082020 Enviar ativa��o para os leads da campanha do curso de Produtos +Job
-(C) Preparar ch� de fraldas de Mari
-01092018 1930 Ch� de Fraldas de Mari @CasadeMari
-(C) Escrever capitulo 3 da disserta��o +Disserta��o
-(C) Transcrever entrevista com a Porto Engenharia +Disserta��o
-(C) Transcrever entrevista com a Cardeal Distribuidora +Disserta��o
-23082020 Ler artigo passado por Profa Carina sobre GameJams +Disserta��o
-15092020 1930 Comemora��o do Anivers�rio de Camila @Restaurante
-(A) 100920 Reuni�o com a coordena��o de curso +GNED
-230820 Fazer o exerc�cio passado pelo professor Gabriel @Academia +Fitness
+(C) Aprender a mexer no github para avancar no projeto.
+(A) 220820 Iniciar a transcricao das entrevistas da Dissertacao +Dissertacao
+22082023 (B) Participar de Oficina de Canais de Tracao do CESARLabs +GNED
+22082020 Fazer o exercicio passado pelo professor Gabriel +Fitness
+(B) Emitir nota fiscal do servico prestado no programa Porto Digital +MTM
+31082020 1630 Realizar a oficina "Como arrasar fazendo apresentacoes" do Minas nas Escolas +MTM
+(C) Preparar cha de fraldas de Mari
+01092018 1930 cha de Fraldas de Mari @CasadeMari
+(C) Escrever capitulo 3 da dissertacao +Dissertacao
+(C) Transcrever entrevista com a Porto Engenharia +Dissertacao
+(C) Transcrever entrevista com a Cardeal Distribuidora +Dissertacao
+23082020 Ler artigo passado por Profa Carina sobre GameJams +Dissertacao
+15092020 1930 Comemoracao do Aniversario de Camila @Restaurante
+(A) 100920 Reuniao com a coordenacao de curso +GNED
+230820 Fazer o exercicio passado pelo professor Gabriel @Academia +Fitness
 (C) Subir as horas extras realizadas essa semana no Portal do Colaborador +Job
-(D) Fazer pesquisa sobre tipos diferentes de relacionamentos de startups @Disserta��o
-(D) Escrever artigo sobre entrevistas Porto Digital +Disserta��o
-16092020 1900 Reuni�o de neg�cios e novas oportunidades +Job
-01092020 Organizar e participar do curso sobre Tend�ncias Digitais +Job
-24112020 almocar @casa
-24112020 almocar baiao de dois @casa
-24112020 almocar baiao de dois @casa
-Comer meu almoço
+(D) Fazer pesquisa sobre tipos diferentes de relacionamentos de startups @Dissertacao
+(D) Escrever artigo sobre entrevistas Porto Digital +Dissertacao
+16092020 1900 Reuniao de negocios e novas oportunidades +Job
+01092020 Organizar e participar do curso sobre Tendencias Digitais +Job
+15092020 (A) Prova 2EE disciplina +Algoritmos1 @TheHuxley
+15092020 2359 Entregar a lista de exercicios +Algoritmos1
+11092020 (A) Estudar para a prova +Algoritmos1
+
