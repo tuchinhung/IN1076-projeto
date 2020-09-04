@@ -1,5 +1,4 @@
 import sys
-import time
 import matplotlib.pyplot as plt
 
 from termcolor import cprint
@@ -162,7 +161,7 @@ def adicionar(novoCompromisso: Compromisso) -> bool:
 
     return True
 
-def listar() -> bool:
+def listar(filtro:str=None) -> bool:
     '''
     Datas e horas são armazenadas nos formatos DDMMAAAA e HHMM, mas são exibidas
     como se espera (com os separadores apropridados). 
@@ -192,7 +191,7 @@ def listar() -> bool:
     # Converte a lista de objetos Compromisso para uma 
     # lista de tuplas (indice, Compromisso), para manter identificar a linha do
     # arquivo após operação de ordenação
-    listaTuplasIndiceCompromisso = []
+    listaTuplasIndiceCompromisso: List[Tuple[int, Compromisso]] = []
     for i, compromisso in enumerate(listaCompromissos):
         listaTuplasIndiceCompromisso.append((i, compromisso))
 
@@ -201,10 +200,30 @@ def listar() -> bool:
 
     # Ordena a lista por prioridade, mantendo ordem por data e hora nos casos com mesma
     # prioridade
-    listaTuplasOrdenadaPrioridade = ordenarTuplasPorPrioridade(listaTuplasOrdenadaData)
+    listaTuplasOrdenadaPrioridade: List[Tuple[int, Compromisso]] = ordenarTuplasPorPrioridade(listaTuplasOrdenadaData)
 
+    if filtro != None:
+        # Filtra a lista por prioridade
+        if prioridadeValida(filtro):
+            listaTuplasOrdenadaPrioridade = filtrarPrioridade(listaTuplasIndiceCompromisso, filtro)
+            if listaTuplasIndiceCompromisso == []:
+                print("Não existem atividades com a prioridade:", filtro)
+        # Filtra a lista por contexto
+        elif contextoValido(filtro):
+            listaTuplasOrdenadaPrioridade = filtrarContexto(listaTuplasIndiceCompromisso, filtro)
+            if listaTuplasIndiceCompromisso == []:
+                print("Não existem atividades com o contexto:", filtro)
+        # Filtra a lista por projeto
+        elif projetoValido(filtro):
+            listaTuplasOrdenadaPrioridade = filtrarProjeto(listaTuplasIndiceCompromisso, filtro)
+            if listaTuplasIndiceCompromisso == []:
+                print("Não existem atividades com o projeto:", filtro)
+        # Quando o usuário entra um filtro inválido - fora do formato de prioridade, contexto ou projeto
+        else:
+            print("Filtro inválido. O filtro precisa ser uma prioridade, contexto ou projeto.")
+            return False
 
-    # Imprime no terminal as atividade ordenadas, utilizando cores para 
+    # Imprime no terminal as atividade ordenadas, utilizando cores para
     # distinguir prioridades de A a D
     for tupla in listaTuplasOrdenadaPrioridade:
         string: str = str(tupla[0]) + ' ' + tupla[1].stringTerminal()
@@ -596,6 +615,36 @@ def ordenarTuplasPorPrioridade(itens: List[Tuple[int, Compromisso]]) -> List[Tup
 
     return ordenarTuplasPorPrioridade(menores) + [pivo] + ordenarTuplasPorPrioridade(maiores)
 
+def filtrarPrioridade(lista:List[Tuple[int, Compromisso]], filtro:str)-> List[Tuple[int, Compromisso]]:
+    if lista == []:
+        return []
+    else:
+        head:Tuple[int, Compromisso] = lista.pop(0)
+        if head[1].prioridade == filtro:
+            return [head] + filtrarPrioridade(lista, filtro)
+        else:
+            return filtrarPrioridade(lista, filtro)
+
+def filtrarContexto(lista:List[Tuple[int, Compromisso]], filtro:str)-> List[Tuple[int, Compromisso]]:
+    if lista == []:
+        return []
+    else:
+        head:Tuple[int, Compromisso] = lista.pop(0)
+        if head[1].contexto == filtro:
+            return [head] + filtrarContexto(lista, filtro)
+        else:
+            return filtrarContexto(lista, filtro)
+
+def filtrarProjeto(lista:List[Tuple[int, Compromisso]], filtro:str)-> List[Tuple[int, Compromisso]]:
+    if lista == []:
+        return []
+    else:
+        head:Tuple[int, Compromisso] = lista.pop(0)
+        if head[1].projeto == filtro:
+            return [head] + filtrarProjeto(lista, filtro)
+        else:
+            return filtrarProjeto(lista, filtro)
+
 def processarComandos(comandos: List[str]) -> None:
     '''
     Esta função processa os comandos e informações passados através da linha de comando e identifica
@@ -613,7 +662,12 @@ def processarComandos(comandos: List[str]) -> None:
             if adicionar(itemParaAdicionar):  # novos itens não têm prioridade
                 print("Atividade adicionada com sucesso à agenda")
         elif comandos[1] == LISTAR:
-            listar()
+            if len(comandos) == 3:
+                listar(comandos[2])
+            elif len(comandos) == 2:
+                listar()
+            else:
+                print("Uso: python agenda.py l [(prioridade), @Contexto ou +Projeto]")
         elif comandos[1] == REMOVER:
             # Verifica se usuario entrou a quantidade de argumentos correto
             # Verifica se usuario digitou indice numerico
